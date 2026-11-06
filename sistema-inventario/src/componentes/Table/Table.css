@@ -1,0 +1,5 @@
+.table-scroll { width: 100%; overflow-x: auto; }
+
+.category-name { display: flex; align-items: center; gap: 9px; }
+
+.category-icon { width: 30px; height: 30px; border-radius: 7px; }

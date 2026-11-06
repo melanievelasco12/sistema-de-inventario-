@@ -1,0 +1,217 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function hasInventoryAccess(orgId) {
+      return signedIn() && orgId == request.auth.uid;
+    }
+
+    function validProduct(data) {
+      return data.keys().hasAll([
+          'code', 'name', 'category', 'unit', 'stock', 'minStock',
+          'movementCount', 'lastMovementId', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'code', 'name', 'category', 'price', 'unit', 'stock', 'minStock',
+          'movementCount', 'lastMovementId', 'updatedAt'
+        ])
+        && data.code is string
+        && data.code.size() > 0
+        && data.code.size() <= 40
+        && data.name is string
+        && data.name.size() > 0
+        && data.category is string
+        && data.category.size() > 0
+        && (!data.keys().hasAny(['price'])
+          || (data.price is number && data.price >= 0 && data.price <= 999999999))
+        && data.unit is string
+        && data.unit.size() > 0
+        && data.stock is int
+        && data.stock >= 0
+        && data.minStock is int
+        && data.minStock >= 0
+        && data.movementCount is int
+        && data.movementCount >= 0
+        && (data.lastMovementId == null || data.lastMovementId is string)
+        && data.updatedAt == request.time;
+    }
+
+    function movementHasShape(data) {
+      return data.keys().hasAll([
+          'productId', 'productName', 'type', 'quantity', 'note', 'createdAt', 'createdBy'
+        ])
+        && data.keys().hasOnly([
+          'productId', 'productName', 'type', 'quantity', 'note', 'createdAt', 'createdBy'
+        ])
+        && data.productId is string
+        && data.productName is string
+        && data.productName.size() > 0
+        && (data.type == 'entrada' || data.type == 'salida')
+        && data.quantity is int
+        && data.quantity > 0
+        && data.note is string
+        && data.note.size() <= 120
+        && data.createdBy == request.auth.uid
+        && data.createdAt == request.time;
+    }
+
+    function validCategory(data) {
+      return data.keys().hasAll(['name', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['name', 'createdAt', 'updatedAt'])
+        && data.name is string
+        && data.name.size() > 0
+        && data.name.size() <= 80
+        && data.createdAt is timestamp
+        && data.updatedAt == request.time;
+    }
+
+    function validSupplier(data) {
+      return data.keys().hasAll(['name', 'phone', 'email', 'address', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['name', 'phone', 'email', 'address', 'createdAt', 'updatedAt'])
+        && data.name is string
+        && data.name.size() > 0
+        && data.name.size() <= 100
+        && data.phone is string
+        && data.phone.size() <= 40
+        && data.email is string
+        && data.email.size() <= 120
+        && data.address is string
+        && data.address.size() <= 240
+        && data.createdAt is timestamp
+        && data.updatedAt == request.time;
+    }
+
+    function movementMatches(orgId, productId, movementId, oldStock, oldCount, newStock, newCount) {
+      let movementPath = /databases/$(database)/documents/organizations/$(orgId)/movements/$(movementId);
+      let movement = getAfter(movementPath).data;
+      return existsAfter(movementPath)
+        && movementHasShape(movement)
+        && movement.productId == productId
+        && movementCountMatches(movement.type, movement.quantity, oldStock, oldCount, newStock, newCount);
+    }
+
+    function movementCountMatches(type, quantity, oldStock, oldCount, newStock, newCount) {
+      return newCount == oldCount + 1
+        && ((type == 'entrada' && newStock == oldStock + quantity)
+          || (type == 'salida' && oldStock >= quantity && newStock == oldStock - quantity));
+    }
+
+    match /organizations/{orgId}/products/{productId} {
+      allow get, list: if hasInventoryAccess(orgId);
+
+      allow create: if hasInventoryAccess(orgId)
+        && validProduct(request.resource.data)
+        && productId == request.resource.data.code
+        && (
+          (request.resource.data.stock == 0
+            && request.resource.data.movementCount == 0
+            && request.resource.data.lastMovementId == null)
+          || (
+            request.resource.data.stock > 0
+            && request.resource.data.movementCount == 1
+            && request.resource.data.lastMovementId is string
+            && movementMatches(
+              orgId,
+              productId,
+              request.resource.data.lastMovementId,
+              0,
+              0,
+              request.resource.data.stock,
+              1
+            )
+            && getAfter(/databases/$(database)/documents/organizations/$(orgId)/movements/$(request.resource.data.lastMovementId)).data.type == 'entrada'
+          )
+        );
+
+      allow update: if hasInventoryAccess(orgId)
+        && validProduct(request.resource.data)
+        && request.resource.data.code == resource.data.code
+        && (
+          (
+            request.resource.data.stock == resource.data.stock
+            && request.resource.data.movementCount == resource.data.movementCount
+            && request.resource.data.lastMovementId == resource.data.lastMovementId
+          )
+          || (
+            request.resource.data.lastMovementId is string
+            && request.resource.data.lastMovementId != resource.data.lastMovementId
+            && movementMatches(
+              orgId,
+              productId,
+              request.resource.data.lastMovementId,
+              resource.data.stock,
+              resource.data.movementCount,
+              request.resource.data.stock,
+              request.resource.data.movementCount
+            )
+          )
+        );
+
+      allow delete: if hasInventoryAccess(orgId)
+        && resource.data.stock == 0
+        && resource.data.movementCount == 0;
+    }
+
+    match /organizations/{orgId}/movements/{movementId} {
+      allow get, list: if hasInventoryAccess(orgId);
+
+      allow create: if hasInventoryAccess(orgId)
+        && movementHasShape(request.resource.data)
+        && existsAfter(/databases/$(database)/documents/organizations/$(orgId)/products/$(request.resource.data.productId))
+        && getAfter(/databases/$(database)/documents/organizations/$(orgId)/products/$(request.resource.data.productId)).data.lastMovementId == movementId
+        && (
+          (
+            !exists(/databases/$(database)/documents/organizations/$(orgId)/products/$(request.resource.data.productId))
+            && request.resource.data.type == 'entrada'
+            && getAfter(/databases/$(database)/documents/organizations/$(orgId)/products/$(request.resource.data.productId)).data.stock == request.resource.data.quantity
+            && getAfter(/databases/$(database)/documents/organizations/$(orgId)/products/$(request.resource.data.productId)).data.movementCount == 1
+          )
+          || (
+            exists(/databases/$(database)/documents/organizations/$(orgId)/products/$(request.resource.data.productId))
+            && movementCountMatches(
+              request.resource.data.type,
+              request.resource.data.quantity,
+              get(/databases/$(database)/documents/organizations/$(orgId)/products/$(request.resource.data.productId)).data.stock,
+              get(/databases/$(database)/documents/organizations/$(orgId)/products/$(request.resource.data.productId)).data.movementCount,
+              getAfter(/databases/$(database)/documents/organizations/$(orgId)/products/$(request.resource.data.productId)).data.stock,
+              getAfter(/databases/$(database)/documents/organizations/$(orgId)/products/$(request.resource.data.productId)).data.movementCount
+            )
+          )
+        );
+
+      allow update, delete: if false;
+    }
+
+    match /organizations/{orgId}/categories/{categoryId} {
+      allow get, list: if hasInventoryAccess(orgId);
+      allow create: if hasInventoryAccess(orgId)
+        && categoryId.matches('^[a-z0-9-]+$')
+        && validCategory(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+      allow update: if hasInventoryAccess(orgId)
+        && categoryId.matches('^[a-z0-9-]+$')
+        && validCategory(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if hasInventoryAccess(orgId);
+    }
+
+    match /organizations/{orgId}/suppliers/{supplierId} {
+      allow get, list: if hasInventoryAccess(orgId);
+      allow create: if hasInventoryAccess(orgId)
+        && validSupplier(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+      allow update: if hasInventoryAccess(orgId)
+        && validSupplier(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if hasInventoryAccess(orgId);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

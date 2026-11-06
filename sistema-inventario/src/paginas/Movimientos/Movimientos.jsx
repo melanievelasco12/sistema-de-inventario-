@@ -1,0 +1,14 @@
+import { Fragment as _Fragment, jsx as _jsx, jsxs as _jsxs } from 'react/jsx-runtime';
+import Table from '../../componentes/Table/Table.jsx';
+import { EmptyState } from '../../componentes/common.jsx';
+import { dateTime } from '../../utils/formatters.js';
+
+export default function Movements({ movements, onNew }) {
+    return _jsxs(_Fragment, { children: [_jsxs("div", { className: "movement-shortcuts", children: [_jsxs("button", { className: "shortcut-card", onClick: () => onNew('entrada'), children: [_jsx("span", { className: "shortcut-icon entry-shortcut", children: "\u2193" }), _jsxs("span", { children: [_jsx("strong", { children: "Registrar entrada" }), _jsx("small", { children: "Agregar mercader\u00EDa al inventario" })] }), _jsx("b", { children: "\u2192" })] }), _jsxs("button", { className: "shortcut-card", onClick: () => onNew('salida'), children: [_jsx("span", { className: "shortcut-icon exit-shortcut", children: "\u2191" }), _jsxs("span", { children: [_jsx("strong", { children: "Registrar salida" }), _jsx("small", { children: "Descontar mercader\u00EDa disponible" })] }), _jsx("b", { children: "\u2192" })] })] }), _jsxs("section", { className: "panel table-panel", children: [_jsxs("div", { className: "table-meta", children: [_jsx("span", { children: "Historial de movimientos" }), _jsxs("span", { children: [movements.length, " registros"] })] }), _jsx(MovementTable, { movements: movements })] })] });
+}
+
+export function MovementTable({ movements }) {
+    if (!movements.length)
+        return _jsx(EmptyState, { title: "A\u00FAn no hay movimientos", detail: "Cuando registres una entrada o salida aparecer\u00E1 aqu\u00ED." });
+    return _jsx(Table, { children: _jsxs("table", { children: [_jsx("thead", { children: _jsxs("tr", { children: [_jsx("th", { children: "Producto" }), _jsx("th", { children: "Tipo" }), _jsx("th", { children: "Cantidad" }), _jsx("th", { children: "Nota" }), _jsx("th", { children: "Fecha" })] }) }), _jsx("tbody", { children: movements.map((movement) => _jsxs("tr", { children: [_jsx("td", { children: _jsxs("div", { className: "product-cell", children: [_jsx("div", { className: "product-avatar", children: movement.productName.slice(0, 1).toUpperCase() }), _jsx("div", { children: _jsx("strong", { children: movement.productName }) })] }) }), _jsx("td", { children: _jsx("span", { className: `movement-type ${movement.type}`, children: movement.type === 'entrada' ? '↓ Entrada' : '↑ Salida' }) }), _jsx("td", { children: _jsxs("strong", { className: movement.type === 'entrada' ? 'positive-quantity' : 'negative-quantity', children: [movement.type === 'entrada' ? '+' : '−', movement.quantity] }) }), _jsx("td", { children: movement.note || _jsx("span", { className: "muted-unit", children: "\u2014" }) }), _jsx("td", { children: dateTime.format(new Date(movement.createdAt)) })] }, movement.id)) })] }) });
+}

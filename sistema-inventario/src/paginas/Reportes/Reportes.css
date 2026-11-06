@@ -1,0 +1,18 @@
+
+.report-stats { margin-bottom: 17px; }
+
+.report-table { padding-bottom: 0; }
+
+.report-heading { align-items: center; padding: 17px; border-bottom: 1px solid #edf0ed; }
+
+.report-heading { border-color: #ece3d6; }
+
+.report-table .panel-heading { padding: 17px 18px 13px; }
+
+.report-filters { display: flex; align-items: end; flex-wrap: wrap; gap: 10px; padding: 0 18px 14px; }
+
+.report-filter { width: min(220px, 100%); gap: 5px; }
+
+.report-filter select { height: 36px; }
+
+.report-result-count { margin: 0 0 10px auto; color: #62594e; font-size: 10px; }

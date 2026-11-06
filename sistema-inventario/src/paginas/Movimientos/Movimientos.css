@@ -1,0 +1,65 @@
+
+.status-badge,.movement-type { display: inline-flex; align-items: center; gap: 5px; padding: 5px 8px; border-radius: 12px; font-size: 8px; font-weight: 600; }
+
+.movement-shortcuts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 13px; margin-bottom: 16px; }
+
+.shortcut-card { display: flex; align-items: center; gap: 12px; padding: 15px; text-align: left; background: #fff; border: 1px solid #edf0ed; border-radius: 8px; }
+
+.shortcut-card:hover { border-color: #cbdacf; box-shadow: 0 3px 10px #294d370c; }
+
+.shortcut-icon { display: grid; width: 34px; height: 34px; place-items: center; border-radius: 8px; font-size: 18px; }
+
+.shortcut-card span:nth-child(2) { flex: 1; }
+
+.shortcut-card strong,.shortcut-card small { display: block; }
+
+.shortcut-card strong { color: #455148; font-size: 10px; }
+
+.shortcut-card small { margin-top: 4px; color: #9aa39b; font-size: 8px; }
+
+.shortcut-card b { color: #7d9582; font-size: 16px; font-weight: 400; }
+
+.movement-type.entrada { color: #568064; background: #edf5ef; }
+
+.movement-type.salida { color: #a06f48; background: #f8f0e8; }
+
+.status-ok,.movement-type.entrada { color: #365b3d; background: #eaf0e5; }
+
+.movement-type.salida { color: #8b5d3b; background: #f6ede2; }
+
+.movement-shortcuts { gap: 13px; }
+
+.shortcut-card { background: #fffcf6; border-color: #e8dfd1; border-radius: 8px; }
+
+.shortcut-card:hover { border-color: #b8c8b1; box-shadow: 0 5px 14px #463d3210; }
+
+.shortcut-card strong { color: #463d32; font-size: 11px; }
+
+.shortcut-card small { color: #62594e; font-size: 9px; }
+
+.shortcut-card b { color: var(--green); }
+
+.movement-shortcuts { margin-bottom: 14px; }
+
+.shortcut-card { min-height: 68px; }
+
+
+.stat-card,.panel,.shortcut-card {
+  border-color: #d8cbb6;
+}
+
+.stat-card:hover,.shortcut-card:hover {
+  border-color: var(--sage);
+  box-shadow: 0 8px 18px #244a351c;
+}
+
+
+.status-ok,.movement-type.entrada {
+  color: var(--surface);
+  background: var(--green);
+}
+
+.status-low,.movement-type.salida {
+  color: #513b24;
+  background: #f0d7a9;
+}

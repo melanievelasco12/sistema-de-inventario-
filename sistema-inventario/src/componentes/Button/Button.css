@@ -1,0 +1,86 @@
+
+
+.button { display: inline-flex; min-height: 37px; align-items: center; justify-content: center; gap: 8px; padding: 0 13px; border-radius: 6px; font-size: 10px; font-weight: 600; transition: background .15s, transform .15s; }
+
+
+.button:active { transform: translateY(1px); }
+
+
+.button svg { width: 14px; height: 14px; }
+
+
+.button-primary { color: #fff; background: var(--green); border: 1px solid var(--green); box-shadow: 0 2px 5px #386b4d24; }
+
+
+.button-primary:hover { background: var(--green-dark); }
+
+
+.button-outline { color: #526b59; background: #fff; border: 1px solid #dfe7e0; }
+
+
+.button-outline:hover,.button-plain:hover { background: #f4f7f4; }
+
+
+.button-plain { color: #758078; background: #fff; border: 1px solid #e6eae6; }
+
+
+.button { min-height: 39px; padding: 0 15px; border-radius: 6px; font-size: 11px; }
+
+
+.button-primary {
+  color: #fffcf6;
+  background: var(--sidebar);
+  border-color: var(--sidebar);
+  box-shadow: 0 3px 8px #244a3524;
+}
+
+
+.button-primary:hover { background: #193b29; border-color: #193b29; box-shadow: 0 5px 12px #244a3530; }
+
+
+.button:disabled { cursor: not-allowed; opacity: .58; }
+
+
+.button-outline { color: #244a35; background: #fffcf6; border-color: #d5ddcf; }
+
+
+.button-outline:hover,.button-plain:hover { color: #244a35; background: #f2f4eb; }
+
+
+.button-plain { color: #62594e; background: #fffcf6; border-color: #e4dacb; }
+
+
+.top-search-submit:focus-visible,.button:focus-visible,.icon-button:focus-visible {
+  outline: 2px solid #789477;
+  outline-offset: 2px;
+}
+
+
+
+.button-primary {
+  color: var(--surface);
+  background: var(--green);
+  border-color: var(--green);
+  box-shadow: 0 4px 10px #244a3533;
+}
+
+
+.button-primary:hover {
+  background: var(--green-dark);
+  border-color: var(--green-dark);
+  box-shadow: 0 6px 14px #244a3540;
+}
+
+
+.button-outline { border-color: var(--sage); }
+
+
+.button-outline:hover,.button-plain:hover {
+  background: #e4ecdf;
+  border-color: var(--sage);
+}
+
+
+.top-search-submit:focus-visible,.button:focus-visible,.icon-button:focus-visible {
+  outline-color: var(--green);
+}
