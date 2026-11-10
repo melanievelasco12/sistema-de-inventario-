@@ -25,6 +25,8 @@ export function Icon({ name }) {
         phone: _jsx(_Fragment, { children: _jsx("path", { d: "M21 16.4v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.4 19.4 0 0 1-6-6A19.8 19.8 0 0 1 1.1 3.7 2 2 0 0 1 3.1 1.5h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.9a2 2 0 0 1-.5 2.1L7 9.5a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.9.7a2 2 0 0 1 1.7 2Z" }) }),
         pin: _jsxs(_Fragment, { children: [_jsx("path", { d: "M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" }), _jsx("circle", { cx: "12", cy: "10", r: "2.5" })] }),
         check: _jsx("path", { d: "m5 12 4 4L19 6" }),
+        entrada: _jsx(_Fragment, { children: _jsx("path", { d: "M12 3v11m-4.5-4.5L12 14l4.5-4.5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" }) }),
+        salida: _jsx(_Fragment, { children: _jsx("path", { d: "M12 14V3m-4.5 4.5L12 3l4.5 4.5M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" }) }),
     };
     return _jsx("svg", { "aria-hidden": "true", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "1.7", strokeLinecap: "round", strokeLinejoin: "round", children: paths[name] ?? paths.grid });
 }

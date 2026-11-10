@@ -1,0 +1,146 @@
+/* ---------- Cuadrícula: dos mitades iguales ---------- */
+.cuadricula {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 17px;
+}
+
+/* Ambos paneles comparten tamaño y relleno para quedar parejos */
+.panelStockBajo,
+.panelRecientes {
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  padding: 17px 18px 12px;
+}
+
+.panelRecientes :global(.panel-heading) {
+  margin-bottom: 7px;
+}
+
+/* Centra los mensajes de "vacío" en el espacio que sobra del panel */
+.vacio {
+  flex: 1;
+  justify-content: center;
+}
+
+/* ---------- Tabla de stock bajo ---------- */
+.scrollTabla {
+  margin: 14px -3px 0;
+}
+
+.tablaStock {
+  min-width: 480px;
+}
+
+.tablaStock th {
+  padding-top: 9px;
+  padding-bottom: 9px;
+  white-space: nowrap;
+}
+
+.tablaStock td {
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+
+.tablaStock :global(.product-avatar) {
+  width: 30px;
+  height: 30px;
+}
+
+.tablaStock :global(.product-cell) strong {
+  font-size: 11px;
+}
+
+.tablaStock :global(.product-cell) span {
+  font-size: 9px;
+}
+
+.tablaStock :global(.status-badge) {
+  white-space: nowrap;
+}
+
+.enlaceStockBajo {
+  display: block;
+  margin: 10px 0 0 3px;
+}
+
+/* ---------- Movimientos recientes ---------- */
+.listaMovimientos {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.listaMovimientos li {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 0;
+  border-top: 1px solid #eee6d9;
+}
+
+.iconoMovimiento {
+  display: grid;
+  width: 27px;
+  height: 27px;
+  flex: 0 0 27px;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.iconoMovimiento.entrada {
+  color: #365b3d;
+  background: #eaf0e5;
+}
+
+.iconoMovimiento.salida {
+  color: #8b5d3b;
+  background: #f6ede2;
+}
+
+.infoMovimiento {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.infoMovimiento strong {
+  overflow: hidden;
+  color: #463d32;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.infoMovimiento span {
+  color: #62594e;
+  font-size: 9px;
+}
+
+.cantidadMovimiento {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.cantidadMovimiento.entrada {
+  color: #426b4a;
+}
+
+.cantidadMovimiento.salida {
+  color: #a56d46;
+}
+
+/* ---------- Móvil y tablet: un panel debajo del otro ---------- */
+@media (max-width: 900px) {
+  .cuadricula {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,15 +1,127 @@
-import { Fragment as _Fragment, jsx as _jsx, jsxs as _jsxs } from 'react/jsx-runtime';
 import Table from '../../componentes/Table/Table.jsx';
 import { Icon } from '../../componentes/Icon.jsx';
 import { StatCard, StatusBadge } from '../../componentes/common.jsx';
-import { currency, dateTime } from '../../utils/formatters.js';
+import { dateTime } from '../../utils/formatters.js';
+import estilos from './Inicio.module.css';
 
-export default function Dashboard({ products, movements, lowStock, totalUnits, onProducts, onMovements }) {
-    const aboveMinimum = products.filter((product) => product.stock > product.minStock).length;
-    const outOfStock = products.filter((product) => product.stock === 0).length;
-    return _jsxs(_Fragment, { children: [_jsxs("section", { className: "stats-grid", children: [_jsx(StatCard, { label: "Productos registrados", value: products.length, icon: "box", tone: "lavender", detail: "En el inventario" }), _jsx(StatCard, { label: "Unidades disponibles", value: totalUnits, icon: "arrows", tone: "mint", detail: "Existencias totales" }), _jsx(StatCard, { label: "Productos con stock bajo", value: lowStock.length, icon: "bell", tone: "peach", detail: "En o bajo el m\u00EDnimo" }), _jsx(StatCard, { label: "Movimientos registrados", value: movements.length, icon: "chart", tone: "blue", detail: "Entradas y salidas" })] }), _jsxs("section", { className: "dashboard-grid", children: [_jsxs("section", { className: "panel low-stock-panel", children: [_jsxs("div", { className: "panel-heading", children: [_jsxs("div", { children: [_jsx("h2", { children: "Productos con stock bajo" }), _jsx("p", { children: "Existencias iguales o inferiores al m\u00EDnimo" })] }), _jsxs("span", { className: "warning-pill", children: [lowStock.length, " productos"] })] }), lowStock.length === 0
-                                ? _jsxs("div", { className: "empty-state compact-empty", children: [_jsx("span", { className: "empty-mark", children: _jsx(Icon, { name: "check" }) }), _jsx("strong", { children: "Todo en orden" }), _jsx("p", { children: "Ning\u00FAn producto est\u00E1 en su nivel m\u00EDnimo." })] })
-                                : _jsx(Table, { className: "dashboard-stock-scroll", children: _jsxs("table", { className: "dashboard-stock-table", children: [_jsx("thead", { children: _jsxs("tr", { children: [_jsx("th", { children: "Producto" }), _jsx("th", { children: "Existencias" }), _jsx("th", { children: "Stock m\u00EDnimo" }), _jsx("th", { children: "Estado" })] }) }), _jsx("tbody", { children: lowStock.slice(0, 6).map((product) => _jsxs("tr", { children: [_jsx("td", { children: _jsxs("div", { className: "product-cell", children: [_jsx("div", { className: "product-avatar", children: product.name.slice(0, 1).toUpperCase() }), _jsxs("div", { children: [_jsx("strong", { children: product.name }), _jsx("span", { children: product.code })] })] }) }), _jsxs("td", { children: [_jsx("strong", { className: "stock-current", children: product.stock }), " ", _jsx("span", { className: "muted-unit", children: product.unit })] }), _jsxs("td", { children: [product.minStock, " ", _jsx("span", { className: "muted-unit", children: product.unit })] }), _jsx("td", { children: _jsx(StatusBadge, { low: true }) })] }, product.id)) })] }) }), lowStock.length > 6 && _jsxs("button", { className: "text-button low-stock-link", onClick: onProducts, children: ["Ver los ", lowStock.length, " productos ", _jsx("span", { children: "\u2192" })] })] }), _jsxs("aside", { className: "dashboard-side", children: [_jsxs("section", { className: "panel inventory-overview", children: [_jsx("div", { className: "panel-heading", children: _jsxs("div", { children: [_jsx("h2", { children: "Resumen de inventario" }), _jsx("p", { children: "Estado actual de las existencias" })] }) }), _jsxs("div", { className: "overview-metrics", children: [_jsxs("div", { children: [_jsx("span", { children: "Sobre el m\u00EDnimo" }), _jsx("strong", { children: currency.format(aboveMinimum) })] }), _jsxs("div", { className: outOfStock > 0 ? 'overview-warning' : '', children: [_jsx("span", { children: "Sin existencias" }), _jsx("strong", { children: currency.format(outOfStock) })] })] })] }), _jsxs("section", { className: "panel recent-panel", children: [_jsxs("div", { className: "panel-heading", children: [_jsxs("div", { children: [_jsx("h2", { children: "Movimientos recientes" }), _jsx("p", { children: "\u00DAltimos registros del inventario" })] }), _jsxs("button", { className: "text-button", onClick: onMovements, children: ["Ver todos ", _jsx("span", { children: "\u2192" })] })] }), !movements.length
-                                        ? _jsxs("div", { className: "empty-state compact-empty", children: [_jsx("strong", { children: "A\u00FAn no hay movimientos" }), _jsx("p", { children: "Los registros aparecer\u00E1n aqu\u00ED." })] })
-                                        : _jsx("ul", { className: "recent-movements", children: movements.slice(0, 4).map((movement) => _jsxs("li", { children: [_jsx("span", { className: `recent-movement-icon ${movement.type}`, "aria-hidden": "true", children: movement.type === 'entrada' ? '↓' : '↑' }), _jsxs("div", { className: "recent-movement-info", children: [_jsx("strong", { children: movement.productName }), _jsx("span", { children: dateTime.format(new Date(movement.createdAt)) })] }), _jsxs("strong", { className: `recent-movement-quantity ${movement.type}`, children: [movement.type === 'entrada' ? '+' : '−', movement.quantity] })] }, movement.id)) })] })] })] })] });
+// Cuántas filas se muestran en cada panel (los dos usan el mismo número para quedar parejos)
+const FILAS_VISIBLES = 6;
+
+export default function Dashboard({ products, movements, lowStock, onProducts, onMovements }) {
+  const entradas = movements.filter((movement) => movement.type === 'entrada').length;
+  const salidas = movements.filter((movement) => movement.type === 'salida').length;
+
+  return (
+    <>
+      <section className="stats-grid">
+        <StatCard label="Productos registrados" value={products.length} icon="box" tone="lavender" detail="En el inventario" />
+        <StatCard label="Productos con stock bajo" value={lowStock.length} icon="bell" tone="peach" detail="En o bajo el mínimo" />
+        <StatCard label="Entradas" value={entradas} icon="entrada" tone="mint" detail="Movimientos de entrada" />
+        <StatCard label="Salidas" value={salidas} icon="salida" tone="blue" detail="Movimientos de salida" />
+      </section>
+
+      <section className={estilos.cuadricula}>
+        {/* Mitad izquierda: productos con stock bajo */}
+        <section className={`panel ${estilos.panelStockBajo}`}>
+          <div className="panel-heading">
+            <div>
+              <h2>Productos con stock bajo</h2>
+              <p>Existencias iguales o inferiores al mínimo</p>
+            </div>
+            <span className="warning-pill">{lowStock.length} productos</span>
+          </div>
+
+          {lowStock.length === 0 ? (
+            <div className={`empty-state compact-empty ${estilos.vacio}`}>
+              <span className="empty-mark"><Icon name="check" /></span>
+              <strong>Todo en orden</strong>
+              <p>Ningún producto está en su nivel mínimo.</p>
+            </div>
+          ) : (
+            <Table className={estilos.scrollTabla}>
+              <table className={estilos.tablaStock}>
+                <thead>
+                  <tr>
+                    <th>Producto</th>
+                    <th>Existencias</th>
+                    <th>Stock mínimo</th>
+                    <th>Estado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {lowStock.slice(0, FILAS_VISIBLES).map((product) => (
+                    <tr key={product.id}>
+                      <td>
+                        <div className="product-cell">
+                          <div className="product-avatar">{product.name.slice(0, 1).toUpperCase()}</div>
+                          <div>
+                            <strong>{product.name}</strong>
+                            <span>{product.code}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <strong className="stock-current">{product.stock}</strong>{' '}
+                        <span className="muted-unit">{product.unit}</span>
+                      </td>
+                      <td>
+                        {product.minStock} <span className="muted-unit">{product.unit}</span>
+                      </td>
+                      <td><StatusBadge low /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Table>
+          )}
+
+          {lowStock.length > FILAS_VISIBLES && (
+            <button className={`text-button ${estilos.enlaceStockBajo}`} onClick={onProducts}>
+              Ver los {lowStock.length} productos <span>→</span>
+            </button>
+          )}
+        </section>
+
+        {/* Mitad derecha: movimientos recientes */}
+        <section className={`panel ${estilos.panelRecientes}`}>
+          <div className="panel-heading">
+            <div>
+              <h2>Movimientos recientes</h2>
+              <p>Últimos registros del inventario</p>
+            </div>
+            <button className="text-button" onClick={onMovements}>
+              Ver todos <span>→</span>
+            </button>
+          </div>
+
+          {movements.length === 0 ? (
+            <div className={`empty-state compact-empty ${estilos.vacio}`}>
+              <strong>Aún no hay movimientos</strong>
+              <p>Los registros aparecerán aquí.</p>
+            </div>
+          ) : (
+            <ul className={estilos.listaMovimientos}>
+              {movements.slice(0, FILAS_VISIBLES).map((movement) => (
+                <li key={movement.id}>
+                  <span
+                    className={`${estilos.iconoMovimiento} ${estilos[movement.type]}`}
+                    aria-hidden="true"
+                  >
+                    {movement.type === 'entrada' ? '↓' : '↑'}
+                  </span>
+                  <div className={estilos.infoMovimiento}>
+                    <strong>{movement.productName}</strong>
+                    <span>{dateTime.format(new Date(movement.createdAt))}</span>
+                  </div>
+                  <strong className={`${estilos.cantidadMovimiento} ${estilos[movement.type]}`}>
+                    {movement.type === 'entrada' ? '+' : '−'}{movement.quantity}
+                  </strong>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      </section>
+    </>
+  );
 }
