@@ -56,14 +56,13 @@ Los datos que ya estaban en `organizations/senor-de-los-alinos` se dejan intacto
 
 - Productos por usuario: `organizations/<UID>/products`.
 - Categorías por usuario: `organizations/<UID>/categories`.
-- Proveedores por usuario: `organizations/<UID>/suppliers`.
+- Los productos guardan una marca opcional; al escribir una categoría nueva en el formulario de producto, se registra en Firestore junto con el producto.
 - Movimientos por usuario: `organizations/<UID>/movements`.
-- Las categorías se guardan en Firestore; las categorías antiguas que solo existían en productos se detectan automáticamente y se pueden registrar desde el módulo **Categorías**. Al renombrar una categoría registrada, también se actualizan sus productos; no se puede borrar mientras tenga productos asociados.
-- El módulo **Proveedores** almacena nombre, teléfono, correo y dirección en Firestore.
+- Las categorías se guardan en Firestore y se pueden elegir o crear desde el formulario de productos.
 - **Configuración** permite actualizar el nombre visible de Firebase Authentication y guardar la vista compacta localmente en el navegador.
 - Las entradas y salidas se registran mediante transacciones de Firestore que actualizan las existencias y crean el movimiento en una operación atómica.
 - Las reglas aíslan los datos por UID; también validan que los cambios de existencias se hagan con un movimiento asociado y protegen el historial de movimientos contra edición o borrado.
-- El código del producto identifica el documento y queda inmutable luego de creado.
+- El código del producto es opcional; si se proporciona, identifica el documento y queda inmutable luego de creado. La unidad de medida también es opcional.
 
 Antes de cargar inventario real, prueba las reglas y transacciones con productos ficticios y dos cuentas. Mantén una copia de seguridad. Las reglas del proyecto deben coincidir con `firestore.rules`; no uses reglas globales abiertas.
 

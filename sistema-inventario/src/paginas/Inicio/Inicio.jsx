@@ -13,7 +13,7 @@ export default function Dashboard({ products, movements, lowStock, onProducts, o
 
   return (
     <>
-      <section className="stats-grid">
+      <section className={`stats-grid ${estilos.estadisticas}`}>
         <StatCard label="Productos registrados" value={products.length} icon="box" tone="lavender" detail="En el inventario" />
         <StatCard label="Productos con stock bajo" value={lowStock.length} icon="bell" tone="peach" detail="En o bajo el mínimo" />
         <StatCard label="Entradas" value={entradas} icon="entrada" tone="mint" detail="Movimientos de entrada" />
@@ -56,16 +56,16 @@ export default function Dashboard({ products, movements, lowStock, onProducts, o
                           <div className="product-avatar">{product.name.slice(0, 1).toUpperCase()}</div>
                           <div>
                             <strong>{product.name}</strong>
-                            <span>{product.code}</span>
+                            {product.code && <span>{product.code}</span>}
                           </div>
                         </div>
                       </td>
                       <td>
                         <strong className="stock-current">{product.stock}</strong>{' '}
-                        <span className="muted-unit">{product.unit}</span>
+                        {product.unit && <span className="muted-unit">{product.unit}</span>}
                       </td>
                       <td>
-                        {product.minStock} <span className="muted-unit">{product.unit}</span>
+                        {product.minStock} {product.unit && <span className="muted-unit">{product.unit}</span>}
                       </td>
                       <td><StatusBadge low /></td>
                     </tr>

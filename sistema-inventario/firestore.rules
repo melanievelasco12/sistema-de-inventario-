@@ -17,19 +17,19 @@ service cloud.firestore {
         ])
         && data.keys().hasOnly([
           'code', 'name', 'category', 'price', 'unit', 'stock', 'minStock',
-          'movementCount', 'lastMovementId', 'updatedAt'
+          'movementCount', 'lastMovementId', 'updatedAt', 'brand'
         ])
         && data.code is string
-        && data.code.size() > 0
         && data.code.size() <= 40
         && data.name is string
         && data.name.size() > 0
+        && (!data.keys().hasAny(['brand'])
+          || (data.brand is string && data.brand.size() <= 80))
         && data.category is string
         && data.category.size() > 0
         && (!data.keys().hasAny(['price'])
           || (data.price is number && data.price >= 0 && data.price <= 999999999))
         && data.unit is string
-        && data.unit.size() > 0
         && data.stock is int
         && data.stock >= 0
         && data.minStock is int
@@ -105,7 +105,7 @@ service cloud.firestore {
 
       allow create: if hasInventoryAccess(orgId)
         && validProduct(request.resource.data)
-        && productId == request.resource.data.code
+        && (request.resource.data.code == '' || productId == request.resource.data.code)
         && (
           (request.resource.data.stock == 0
             && request.resource.data.movementCount == 0

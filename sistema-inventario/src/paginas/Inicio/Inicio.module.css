@@ -1,4 +1,14 @@
 /* ---------- Cuadrícula: dos mitades iguales ---------- */
+.estadisticas :global(.stat-icon.mint) {
+  color: #365b3d;
+  background: #eaf0e5;
+}
+
+.estadisticas :global(.stat-icon.blue) {
+  color: #8b5d3b;
+  background: #f6ede2;
+}
+
 .cuadricula {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

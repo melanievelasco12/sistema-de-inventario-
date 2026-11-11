@@ -27,6 +27,8 @@
 
 .catalog-product span { color: var(--muted); font-size: 9px; }
 
+.catalog-product .catalog-brand { color: var(--ink); font-weight: 600; }
+
 .product-price { color: var(--ink); font-variant-numeric: tabular-nums; }
 
 .catalog-stock { color: var(--green); font-variant-numeric: tabular-nums; }

@@ -1,4 +1,4 @@
-import { collection, deleteDoc, doc, getDocs, onSnapshot, orderBy, query, runTransaction, serverTimestamp, setDoc, updateDoc, where, } from 'firebase/firestore';
+import { collection, doc, onSnapshot, orderBy, query, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from './firebase';
 function requireDb() {
     if (!db)
@@ -68,127 +68,35 @@ export function subscribeToCategories(onChange, onError) {
         }
     }, onError);
 }
-export async function createCategory(name) {
-    const database = requireDb();
-    const categoryId = categoryDocumentId(name);
-    const categoryRef = doc(database, organizationPath(`categories/${categoryId}`));
-    await runTransaction(database, async (transaction) => {
-        const existing = await transaction.get(categoryRef);
-        if (existing.exists())
-            throw new InventoryError('duplicate-category');
-        transaction.set(categoryRef, {
-            name: name.trim(),
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-        });
-    });
-}
-export async function updateCategory(category, name) {
-    const database = requireDb();
-    const nextId = categoryDocumentId(name);
-    const categoryRef = doc(database, organizationPath(`categories/${category.id}`));
-    const nextRef = doc(database, organizationPath(`categories/${nextId}`));
-    const productsQuery = query(collection(database, organizationPath('products')), where('category', '==', category.name));
-    const productsSnapshot = await getDocs(productsQuery);
-    if (productsSnapshot.size > 450)
-        throw new InventoryError('category-too-many-products');
-    await runTransaction(database, async (transaction) => {
-        const current = await transaction.get(categoryRef);
-        const next = nextId === category.id ? current : await transaction.get(nextRef);
-        const products = [];
-        for (const product of productsSnapshot.docs) {
-            products.push(await transaction.get(product.ref));
-        }
-        if (!current.exists())
-            throw new InventoryError('category-not-found');
-        if (nextId !== category.id && next.exists())
-            throw new InventoryError('duplicate-category');
-        if (nextId === category.id) {
-            transaction.update(categoryRef, { name: name.trim(), updatedAt: serverTimestamp() });
-        }
-        else {
-            transaction.delete(categoryRef);
-            transaction.set(nextRef, {
-                name: name.trim(),
-                createdAt: serverTimestamp(),
-                updatedAt: serverTimestamp(),
-            });
-        }
-        for (const product of products) {
-            if (product.exists() && product.data().category === category.name) {
-                transaction.update(product.ref, { category: name.trim(), updatedAt: serverTimestamp() });
-            }
-        }
-    });
-}
-export async function deleteCategory(category) {
-    const database = requireDb();
-    const categoryRef = doc(database, organizationPath(`categories/${category.id}`));
-    const productsQuery = query(collection(database, organizationPath('products')), where('category', '==', category.name));
-    const productsSnapshot = await getDocs(productsQuery);
-    if (!productsSnapshot.empty)
-        throw new InventoryError('category-in-use');
-    await runTransaction(database, async (transaction) => {
-        const current = await transaction.get(categoryRef);
-        const products = [];
-        for (const product of productsSnapshot.docs) {
-            products.push(await transaction.get(product.ref));
-        }
-        if (!current.exists())
-            throw new InventoryError('category-not-found');
-        if (products.some((product) => product.exists() && product.data().category === category.name)) {
-            throw new InventoryError('category-in-use');
-        }
-        transaction.delete(categoryRef);
-    });
-}
-export function subscribeToSuppliers(onChange, onError) {
-    const suppliersRef = query(collection(requireDb(), organizationPath('suppliers')), orderBy('name'));
-    return onSnapshot(suppliersRef, (snapshot) => {
-        try {
-            onChange(snapshot.docs.map((item) => readSupplier(item.id, item.data({ serverTimestamps: 'estimate' }))));
-        }
-        catch (error) {
-            onError(toError(error));
-        }
-    }, onError);
-}
-export async function createSupplier(input) {
-    const database = requireDb();
-    const supplierRef = doc(collection(database, organizationPath('suppliers')));
-    await setDoc(supplierRef, {
-        ...normalizeSupplierInput(input),
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-    });
-}
-export async function updateSupplier(supplier) {
-    const database = requireDb();
-    const supplierRef = doc(database, organizationPath(`suppliers/${supplier.id}`));
-    await updateDoc(supplierRef, {
-        ...normalizeSupplierInput(supplier),
-        updatedAt: serverTimestamp(),
-    });
-}
-export async function deleteSupplier(supplier) {
-    const database = requireDb();
-    await deleteDoc(doc(database, organizationPath(`suppliers/${supplier.id}`)));
-}
 export async function createProduct(input, uid) {
     const database = requireDb();
-    const productId = input.code.trim().toUpperCase();
-    const productRef = doc(database, organizationPath(`products/${productId}`));
+    const productCode = input.code.trim().toUpperCase();
+    const productRef = productCode
+        ? doc(database, organizationPath(`products/${productCode}`))
+        : doc(collection(database, organizationPath('products')));
+    const productId = productRef.id;
+    const categoryRef = doc(database, organizationPath(`categories/${categoryDocumentId(input.category)}`));
     const movementRef = input.stock > 0
         ? doc(collection(database, organizationPath('movements')))
         : null;
     await runTransaction(database, async (transaction) => {
         const existing = await transaction.get(productRef);
+        const categorySnapshot = await transaction.get(categoryRef);
         if (existing.exists())
             throw new InventoryError('duplicate-code');
+        const categoryName = categorySnapshot.exists() ? categorySnapshot.data().name : input.category.trim();
+        if (!categorySnapshot.exists()) {
+            transaction.set(categoryRef, {
+                name: categoryName,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+            });
+        }
         transaction.set(productRef, {
-            code: input.code.trim().toUpperCase(),
+            code: productCode,
             name: input.name,
-            category: input.category,
+            brand: input.brand,
+            category: categoryName,
             price: input.price,
             unit: input.unit,
             stock: input.stock,
@@ -213,13 +121,24 @@ export async function createProduct(input, uid) {
 export async function updateProduct(product) {
     const database = requireDb();
     const productRef = doc(database, organizationPath(`products/${product.id}`));
+    const categoryRef = doc(database, organizationPath(`categories/${categoryDocumentId(product.category)}`));
     await runTransaction(database, async (transaction) => {
         const snapshot = await transaction.get(productRef);
+        const categorySnapshot = await transaction.get(categoryRef);
         if (!snapshot.exists())
             throw new InventoryError('product-not-found');
+        const categoryName = categorySnapshot.exists() ? categorySnapshot.data().name : product.category.trim();
+        if (!categorySnapshot.exists()) {
+            transaction.set(categoryRef, {
+                name: categoryName,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp(),
+            });
+        }
         transaction.update(productRef, {
             name: product.name,
-            category: product.category,
+            brand: product.brand,
+            category: categoryName,
             price: product.price,
             unit: product.unit,
             minStock: product.minStock,
@@ -274,14 +193,6 @@ export async function registerMovement(productId, type, quantity, note, uid) {
 }
 export function getInventoryErrorMessage(error) {
     if (error instanceof InventoryError) {
-        if (error.code === 'duplicate-category')
-            return 'Ya existe una categoría con ese nombre.';
-        if (error.code === 'category-not-found')
-            return 'La categoría ya no existe. Actualiza la lista e inténtalo de nuevo.';
-        if (error.code === 'category-in-use')
-            return 'No se puede eliminar una categoría que todavía usan productos.';
-        if (error.code === 'category-too-many-products')
-            return 'Esta categoría tiene demasiados productos para renombrarla en una sola operación. Actualízalos en grupos más pequeños.';
         if (error.code === 'duplicate-code')
             return 'Ya existe un producto con ese código.';
         if (error.code === 'product-not-found')
@@ -307,6 +218,7 @@ export function getInventoryErrorMessage(error) {
 function readProduct(id, data) {
     if (typeof data.code !== 'string'
         || typeof data.name !== 'string'
+        || (data.brand !== undefined && (typeof data.brand !== 'string' || data.brand.length > 80))
         || typeof data.category !== 'string'
         || (data.price !== undefined && !isNonNegativePrice(data.price))
         || typeof data.unit !== 'string'
@@ -320,6 +232,7 @@ function readProduct(id, data) {
         id,
         code: data.code,
         name: data.name,
+        brand: data.brand ?? '',
         category: data.category,
         price: data.price === undefined ? 0 : data.price,
         unit: data.unit,
@@ -336,35 +249,9 @@ function readCategory(id, data) {
     }
     return { id, name: data.name, createdAt: toIsoString(data.createdAt) };
 }
-function readSupplier(id, data) {
-    if (typeof data.name !== 'string'
-        || data.name.trim().length === 0
-        || typeof data.phone !== 'string'
-        || typeof data.email !== 'string'
-        || typeof data.address !== 'string') {
-        throw new Error(`El proveedor ${id} contiene datos incompletos o inválidos en Firestore.`);
-    }
-    return {
-        id,
-        name: data.name,
-        phone: data.phone,
-        email: data.email,
-        address: data.address,
-        createdAt: toIsoString(data.createdAt),
-        updatedAt: toIsoString(data.updatedAt),
-    };
-}
 function categoryDocumentId(name) {
     const slug = name.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     return slug || `category-${Array.from(name.trim()).map((character) => character.codePointAt(0)?.toString(16)).join('-')}`;
-}
-function normalizeSupplierInput(input) {
-    return {
-        name: input.name.trim(),
-        phone: input.phone.trim(),
-        email: input.email.trim(),
-        address: input.address.trim(),
-    };
 }
 function readMovement(id, data) {
     if (typeof data.productId !== 'string'

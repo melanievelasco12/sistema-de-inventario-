@@ -5,8 +5,6 @@ const navigationItems = [
   ['dashboard', 'Inicio', 'home'],
   ['products', 'Productos', 'box'],
   ['movements', 'Movimientos', 'arrows'],
-  ['categories', 'Categor\u00edas', 'tag'],
-  ['suppliers', 'Proveedores', 'users'],
   ['reports', 'Reportes', 'chart'],
   ['settings', 'Configuraci\u00f3n', 'settings'],
 ]
