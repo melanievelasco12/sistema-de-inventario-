@@ -43,6 +43,28 @@
 
 .shortcut-card { min-height: 68px; }
 
+.movement-date-filters { display: flex; align-items: end; flex-wrap: wrap; gap: 10px; padding: 14px 17px; border-bottom: 1px solid #ece3d6; }
+
+.movement-date-filter { display: grid; width: min(150px, 100%); gap: 5px; color: #62594e; font-size: 10px; }
+
+.movement-date-filter select { height: 36px; padding: 0 10px; color: #463d32; background: #fffcf6; border: 1px solid #e1d7c8; border-radius: 6px; font: inherit; }
+
+.movement-date-filter select:focus { border-color: #789477; outline: 2px solid #78947730; }
+
+.movement-filter-count { margin: 0 0 10px auto; color: #62594e; font-size: 10px; }
+
+.movement-filter-clear { margin: 0 0 9px; padding: 4px 0; color: var(--green); background: transparent; border: 0; font-size: 10px; font-weight: 600; }
+
+.movement-filter-clear:hover { text-decoration: underline; }
+
+.heading-actions:not(.dashboard-heading-actions) > .search-box { display: none; }
+
+@media (max-width: 700px) {
+    .movement-date-filter { min-width: 90px; flex: 1; }
+    .movement-filter-count { width: 100%; margin: 0; }
+    .movement-filter-clear { margin: 0; }
+}
+
 
 .stat-card,.panel,.shortcut-card {
   border-color: #d8cbb6;
@@ -62,4 +84,83 @@
 .status-low,.movement-type.salida {
   color: #513b24;
   background: #f0d7a9;
+}
+
+.movement-shortcuts .shortcut-card {
+  position: relative;
+  min-height: 78px;
+  overflow: hidden;
+  border-color: #e5dccd;
+  box-shadow: 0 3px 12px #463d3208;
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+
+.movement-shortcuts .shortcut-card::after {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: #789477;
+  content: '';
+}
+
+.movement-shortcuts .shortcut-card:nth-child(2)::after {
+  background: #d2a66f;
+}
+
+.movement-shortcuts .shortcut-card:hover {
+  transform: translateY(-2px);
+  border-color: #b8c8b1;
+  box-shadow: 0 8px 18px #463d3212;
+}
+
+.movement-shortcuts .shortcut-card:focus-visible,
+.movement-filter-clear:focus-visible {
+  outline: 2px solid #789477;
+  outline-offset: 3px;
+}
+
+.movement-shortcuts .entry-shortcut {
+  color: #31593b;
+  background: #e7efe2;
+}
+
+.movement-shortcuts .exit-shortcut {
+  color: #754719;
+  background: #f5e5ce;
+}
+
+.movement-date-filters {
+  background: linear-gradient(90deg, #fffcf6, #f8f4ec);
+}
+
+.movement-date-filter select {
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.movement-date-filter select:hover {
+  border-color: #b8c8b1;
+}
+
+.movement-date-filter select:focus-visible {
+  box-shadow: 0 0 0 3px #78947720;
+}
+
+.movement-filter-count {
+  font-variant-numeric: tabular-nums;
+}
+
+.movement-history-panel tbody tr {
+  transition: background-color .15s ease;
+}
+
+.movement-history-panel tbody tr:hover {
+  background: #f7f3e9;
+}
+
+@media (max-width: 600px) {
+  .movement-shortcuts .shortcut-card {
+    min-height: 68px;
+  }
 }

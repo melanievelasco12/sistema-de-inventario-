@@ -74,3 +74,79 @@
     .report-chart-panel { min-height: 215px; padding: 14px; }
     .report-pie-layout { grid-template-columns: minmax(105px, .7fr) minmax(0, 1fr); }
 }
+
+.report-chart-panel {
+    overflow: hidden;
+    border-color: #e5dccd;
+    background: linear-gradient(145deg, #fffefa, #fffcf6);
+    box-shadow: 0 4px 14px #463d3208;
+}
+
+.report-chart-panel .panel-heading h2 {
+    font-size: 13px;
+}
+
+.report-chart-panel .panel-heading p {
+    color: #756b5e;
+}
+
+.report-pie circle:not(:first-child) {
+    stroke-linecap: butt;
+}
+
+.report-chart-legend li {
+    padding: 5px 6px;
+    border-radius: 5px;
+    transition: background-color .15s ease;
+}
+
+.report-chart-legend li:hover {
+    background: #f1eee5;
+}
+
+.report-line-chart {
+    max-height: 175px;
+}
+
+.report-table {
+    border-color: #e5dccd;
+    box-shadow: 0 4px 14px #463d3208;
+}
+
+.report-table .report-heading {
+    background: linear-gradient(90deg, #f8f4ec, #fffcf6);
+}
+
+.report-table .report-heading h2 {
+    font-size: 13px;
+}
+
+.report-filter select {
+    color: #463d32;
+    background: #fffcf6;
+    border: 1px solid #e1d7c8;
+    border-radius: 6px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.report-filter select:hover {
+    border-color: #b8c8b1;
+}
+
+.report-filter select:focus-visible {
+    border-color: #789477;
+    outline: 0;
+    box-shadow: 0 0 0 3px #78947720;
+}
+
+.report-result-count {
+    font-variant-numeric: tabular-nums;
+}
+
+.report-table tbody tr {
+    transition: background-color .15s ease;
+}
+
+.report-table tbody tr:hover {
+    background: #f7f3e9;
+}

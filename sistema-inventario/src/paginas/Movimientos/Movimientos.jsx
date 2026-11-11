@@ -1,14 +1,160 @@
-import { Fragment as _Fragment, jsx as _jsx, jsxs as _jsxs } from 'react/jsx-runtime';
+import { useState } from 'react';
 import Table from '../../componentes/Table/Table.jsx';
 import { EmptyState } from '../../componentes/common.jsx';
-import { dateTime } from '../../utils/formatters.js';
 
-export default function Movements({ movements, onNew }) {
-    return _jsxs(_Fragment, { children: [_jsxs("div", { className: "movement-shortcuts", children: [_jsxs("button", { className: "shortcut-card", onClick: () => onNew('entrada'), children: [_jsx("span", { className: "shortcut-icon entry-shortcut", children: "\u2193" }), _jsxs("span", { children: [_jsx("strong", { children: "Registrar entrada" }), _jsx("small", { children: "Agregar mercader\u00EDa al inventario" })] }), _jsx("b", { children: "\u2192" })] }), _jsxs("button", { className: "shortcut-card", onClick: () => onNew('salida'), children: [_jsx("span", { className: "shortcut-icon exit-shortcut", children: "\u2191" }), _jsxs("span", { children: [_jsx("strong", { children: "Registrar salida" }), _jsx("small", { children: "Descontar mercader\u00EDa disponible" })] }), _jsx("b", { children: "\u2192" })] })] }), _jsxs("section", { className: "panel table-panel", children: [_jsxs("div", { className: "table-meta", children: [_jsx("span", { children: "Historial de movimientos" }), _jsxs("span", { children: [movements.length, " registros"] })] }), _jsx(MovementTable, { movements: movements })] })] });
+const movementDateTime = new Intl.DateTimeFormat('es-EC', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+});
+
+const monthFormatter = new Intl.DateTimeFormat('es-EC', { month: 'long', timeZone: 'UTC' });
+const monthOptions = Array.from({ length: 12 }, (_, index) => ({
+    value: String(index + 1),
+    label: monthFormatter.format(new Date(Date.UTC(2024, index, 1))),
+}));
+
+function getMovementDate(value) {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
 }
 
-export function MovementTable({ movements }) {
-    if (!movements.length)
-        return _jsx(EmptyState, { title: "A\u00FAn no hay movimientos", detail: "Cuando registres una entrada o salida aparecer\u00E1 aqu\u00ED." });
-    return _jsx(Table, { children: _jsxs("table", { children: [_jsx("thead", { children: _jsxs("tr", { children: [_jsx("th", { children: "Producto" }), _jsx("th", { children: "Tipo" }), _jsx("th", { children: "Cantidad" }), _jsx("th", { children: "Nota" }), _jsx("th", { children: "Fecha" })] }) }), _jsx("tbody", { children: movements.map((movement) => _jsxs("tr", { children: [_jsx("td", { children: _jsxs("div", { className: "product-cell", children: [_jsx("div", { className: "product-avatar", children: movement.productName.slice(0, 1).toUpperCase() }), _jsx("div", { children: _jsx("strong", { children: movement.productName }) })] }) }), _jsx("td", { children: _jsx("span", { className: `movement-type ${movement.type}`, children: movement.type === 'entrada' ? '↓ Entrada' : '↑ Salida' }) }), _jsx("td", { children: _jsxs("strong", { className: movement.type === 'entrada' ? 'positive-quantity' : 'negative-quantity', children: [movement.type === 'entrada' ? '+' : '−', movement.quantity] }) }), _jsx("td", { children: movement.note || _jsx("span", { className: "muted-unit", children: "\u2014" }) }), _jsx("td", { children: dateTime.format(new Date(movement.createdAt)) })] }, movement.id)) })] }) });
+export default function Movements({ movements, onNew }) {
+    const [day, setDay] = useState('');
+    const [month, setMonth] = useState('');
+    const [year, setYear] = useState('');
+    const [currentYear] = useState(() => new Date().getFullYear());
+    const years = [...new Set([currentYear, ...movements
+        .map((movement) => getMovementDate(movement.createdAt)?.getFullYear())
+        .filter((movementYear) => movementYear !== undefined)])].sort((a, b) => b - a);
+    const filteredMovements = movements.filter((movement) => {
+        const date = getMovementDate(movement.createdAt);
+        return date
+            && (!day || date.getDate() === Number(day))
+            && (!month || date.getMonth() + 1 === Number(month))
+            && (!year || date.getFullYear() === Number(year));
+    });
+    const hasDateFilter = Boolean(day || month || year);
+
+    return (
+        <>
+            <div className="movement-shortcuts">
+                <button className="shortcut-card" onClick={() => onNew('entrada')}>
+                    <span className="shortcut-icon entry-shortcut">↓</span>
+                    <span><strong>Registrar entrada</strong><small>Agregar mercadería al inventario</small></span>
+                    <b>→</b>
+                </button>
+                <button className="shortcut-card" onClick={() => onNew('salida')}>
+                    <span className="shortcut-icon exit-shortcut">↑</span>
+                    <span><strong>Registrar salida</strong><small>Descontar mercadería disponible</small></span>
+                    <b>→</b>
+                </button>
+            </div>
+            <section className="panel table-panel movement-history-panel">
+                <div className="movement-date-filters" aria-label="Filtrar movimientos por fecha">
+                    <label className="field movement-date-filter">
+                        Día
+                        <select value={day} onChange={(event) => setDay(event.target.value)}>
+                            <option value="">Todos</option>
+                            {Array.from({ length: 31 }, (_, index) => (
+                                <option key={index + 1} value={index + 1}>{index + 1}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <label className="field movement-date-filter">
+                        Mes
+                        <select value={month} onChange={(event) => setMonth(event.target.value)}>
+                            <option value="">Todos</option>
+                            {monthOptions.map((option) => (
+                                <option key={option.value} value={option.value}>{option.label}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <label className="field movement-date-filter">
+                        Año
+                        <select value={year} onChange={(event) => setYear(event.target.value)}>
+                            <option value="">Todos</option>
+                            {years.map((option) => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </label>
+                    <span className="movement-filter-count">
+                        {filteredMovements.length} de {movements.length} registros
+                    </span>
+                    {hasDateFilter && (
+                        <button
+                            type="button"
+                            className="movement-filter-clear"
+                            onClick={() => {
+                                setDay('');
+                                setMonth('');
+                                setYear('');
+                            }}
+                        >
+                            Limpiar filtros
+                        </button>
+                    )}
+                </div>
+                <div className="table-meta">
+                    <span>Historial de movimientos</span>
+                    <span>{filteredMovements.length} registros</span>
+                </div>
+                <MovementTable movements={filteredMovements} hasDateFilter={hasDateFilter} />
+            </section>
+        </>
+    );
+}
+
+export function MovementTable({ movements, hasDateFilter }) {
+    if (!movements.length) {
+        return hasDateFilter
+            ? <EmptyState title="No hay movimientos para esta fecha" detail="Prueba con otro día, mes o año, o limpia los filtros." />
+            : <EmptyState title="Aún no hay movimientos" detail="Cuando registres una entrada o salida aparecerá aquí." />;
+    }
+
+    return (
+        <Table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Tipo</th>
+                        <th>Cantidad</th>
+                        <th>Nota</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {movements.map((movement) => {
+                        const date = getMovementDate(movement.createdAt);
+                        return (
+                            <tr key={movement.id}>
+                                <td>
+                                    <div className="product-cell">
+                                        <div className="product-avatar">{movement.productName.slice(0, 1).toUpperCase()}</div>
+                                        <div><strong>{movement.productName}</strong></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span className={`movement-type ${movement.type}`}>
+                                        {movement.type === 'entrada' ? '↓ Entrada' : '↑ Salida'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <strong className={movement.type === 'entrada' ? 'positive-quantity' : 'negative-quantity'}>
+                                        {movement.type === 'entrada' ? '+' : '−'}{movement.quantity}
+                                    </strong>
+                                </td>
+                                <td>{movement.note || <span className="muted-unit">—</span>}</td>
+                                <td>{date ? movementDateTime.format(date) : '—'}</td>
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </Table>
+    );
 }

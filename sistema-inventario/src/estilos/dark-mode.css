@@ -1,0 +1,144 @@
+.app-shell.dark-theme {
+    color: #e7e4dc;
+    background: radial-gradient(ellipse at 92% 8%, #29332c 0, transparent 34rem), #171c19;
+    color-scheme: dark;
+}
+
+.dark-theme .main-area { background: transparent; }
+.dark-theme .topbar { color: #e7e4dc; background: #1d241f; border-color: #3b463e; }
+.dark-theme .topbar,
+.dark-theme .panel,
+.dark-theme .stat-card,
+.dark-theme .shortcut-card,
+.dark-theme .notification-panel,
+.dark-theme .settings-panel { background: #222925; border-color: #3b463e; color: #e7e4dc; }
+.dark-theme .content { color: #e7e4dc; }
+.dark-theme h1,
+.dark-theme .panel-heading h2,
+.dark-theme .panel-heading p,
+.dark-theme .stat-label,
+.dark-theme .stat-value,
+.dark-theme .stat-detail,
+.dark-theme .table-meta,
+.dark-theme .table-meta span:first-child,
+.dark-theme th,
+.dark-theme td,
+.dark-theme td strong,
+.dark-theme .product-cell strong,
+.dark-theme .catalog-product strong,
+.dark-theme .catalog-product span,
+.dark-theme .settings-heading h2,
+.dark-theme .settings-heading p,
+.dark-theme .settings-panel .field,
+.dark-theme .preference-option strong,
+.dark-theme .preference-option small,
+.dark-theme .infoMovimiento strong,
+.dark-theme .infoMovimiento span,
+.dark-theme .report-result-count,
+.dark-theme .movement-filter-count,
+.dark-theme .report-filter,
+.dark-theme .footer { color: #e7e4dc; }
+.dark-theme .page-subtitle,
+.dark-theme .eyebrow,
+.dark-theme .muted-unit,
+.dark-theme .product-cell span { color: #b7c1b8; }
+.dark-theme .stat-card { background: linear-gradient(145deg, #252d28, #202622); box-shadow: 0 3px 12px #0003; }
+.dark-theme .stat-card::after { opacity: .8; }
+.dark-theme .panel,
+.dark-theme .report-chart-panel,
+.dark-theme .report-table { box-shadow: 0 4px 14px #0003; }
+.dark-theme .table-meta,
+.dark-theme .report-table .report-heading,
+.dark-theme .movement-date-filters,
+.dark-theme .report-chart-panel,
+.dark-theme .settings-panel { background: #222925; }
+.dark-theme th,
+.dark-theme .products-table-panel th { color: #d3d9d2; background: #303a33; }
+.dark-theme td { border-color: #374139; }
+.dark-theme tbody tr:hover { background: #2c352f; }
+.dark-theme .product-avatar { color: #d4e4d3; background: #34443a; }
+.dark-theme .category-pill,
+.dark-theme .catalog-stock { color: #d4e4d3; background: #34443a; border-color: #48594b; }
+.dark-theme .catalog-stock.low,
+.dark-theme .warning-pill,
+.dark-theme .pildoraAlerta,
+.dark-theme .movement-type.salida { color: #f0c99d; background: #4a3828; }
+.dark-theme .pildoraSaludable,
+.dark-theme .status-ok,
+.dark-theme .movement-type.entrada { color: #d4e4d3; background: #304337; }
+.dark-theme .status-low { color: #f0c99d; background: #4a3828; }
+.dark-theme .report-chart-panel .panel-heading p { color: #bac3bb; }
+.dark-theme .report-pie-total { fill: #f0eee8; }
+.dark-theme .report-pie-caption,
+.dark-theme .report-line-label { fill: #bac3bb; }
+.dark-theme .report-chart-gridline { stroke: #39443c; }
+.dark-theme .report-chart-legend li { color: #dddcd5; }
+.dark-theme .report-chart-legend strong { color: #f0eee8; }
+.dark-theme .report-chart-legend li:hover { background: #303a33; }
+.dark-theme .report-filter select,
+.dark-theme .movement-date-filter select,
+.dark-theme .settings-panel .field input,
+.dark-theme .settings-panel .field input[readonly] {
+    color: #e7e4dc;
+    background: #1a211c;
+    border-color: #48544a;
+}
+.dark-theme .report-filter select:focus-visible,
+.dark-theme .movement-date-filter select:focus-visible,
+.dark-theme .settings-panel .field input:focus-visible { border-color: #9ab59a; }
+.dark-theme .preference-option,
+.dark-theme .resumenActividad { background: #29312b; border-color: #414c43; }
+.dark-theme .preference-option:hover { border-color: #718d75; }
+.dark-theme .settings-icon { color: #d4e4d3; background: #34443a; border-color: #48594b; }
+.dark-theme .settings-divider,
+.dark-theme .movement-shortcuts .shortcut-card { border-color: #414c43; }
+.dark-theme .shortcut-card strong,
+.dark-theme .shortcut-card small { color: #e7e4dc; }
+.dark-theme .entry-shortcut { color: #d4e4d3; background: #304337; }
+.dark-theme .exit-shortcut { color: #f0c99d; background: #4a3828; }
+.dark-theme .movement-date-filter,
+.dark-theme .encabezadoActividad,
+.dark-theme .encabezadoActividad > span { color: #c5cdc5; }
+.dark-theme .listaMovimientos li { border-color: #39443c; }
+.dark-theme .iconoMovimiento.entrada { color: #d4e4d3; background: #304337; }
+.dark-theme .iconoMovimiento.salida { color: #f0c99d; background: #4a3828; }
+.dark-theme .cantidadMovimiento.entrada { color: #a9d0ad; }
+.dark-theme .cantidadMovimiento.salida { color: #efc395; }
+.dark-theme .empty-state strong,
+.dark-theme .empty-state p { color: #c5cdc5; }
+.dark-theme .settings-actions .button { color: #fff; }
+.dark-theme .table-panel tbody tr:hover { background: #2c352f; }
+.dark-theme .search-box { background: #222925; border-color: #48544a; }
+.dark-theme .search-box input { color: #e7e4dc; }
+.dark-theme .search-box input::placeholder { color: #9da99f; }
+.dark-theme .icon-button { color: #e0e5df; background: #2a332c; border-color: #48544a; }
+.dark-theme .icon-button:hover { background: #344238; }
+.dark-theme .notification-panel-header { border-color: #414c43; }
+.dark-theme .notification-panel-header h2,
+.dark-theme .notification-item strong,
+.dark-theme .notification-panel p,
+.dark-theme .notification-item small { color: #e7e4dc; }
+.dark-theme .notification-item { background: #29312b; border-color: #414c43; }
+.dark-theme .notification-item:hover { background: #344238; }
+.dark-theme .toast { color: #d4e4d3; background: #293b30; border-color: #49624f; }
+.dark-theme .toast button { color: #d4e4d3; }
+.dark-theme .product-modal,
+.dark-theme .modal { color: #e7e4dc; background: #222925; border-color: #414c43; }
+.dark-theme .product-modal .modal-header h2,
+.dark-theme .product-modal .field,
+.dark-theme .product-modal .stock-fields legend { color: #e7e4dc; }
+.dark-theme .product-modal-description,
+.dark-theme .product-modal .field small,
+.dark-theme .product-modal .stock-fields > p { color: #bac3bb; }
+.dark-theme .product-modal .field input,
+.dark-theme .product-modal .field select { color: #e7e4dc; background: #1a211c; border-color: #48544a; }
+.dark-theme .product-modal .field input:disabled { color: #bac3bb; background: #303a33; }
+.dark-theme .product-modal .stock-fields { background: #29312b; border-color: #414c43; }
+.dark-theme .product-modal .modal-actions { border-color: #414c43; }
+.dark-theme .product-modal .modal-actions .button-plain { color: #e7e4dc; border-color: #59665b; }
+.dark-theme .product-modal .modal-actions .button-plain:hover { background: #344238; }
+.dark-theme .code-cell { color: #bac3bb; }
+.dark-theme .positive-quantity { color: #a9d0ad !important; }
+.dark-theme .negative-quantity { color: #efc395 !important; }
+.dark-theme .catalog-empty strong,
+.dark-theme .catalog-empty p { color: #d8ded8; }

@@ -42,3 +42,99 @@
 .catalog-empty strong { color: var(--ink); font-size: 12px; }
 
 .catalog-empty p { margin: 6px 0 0; color: var(--muted); font-size: 10px; }
+
+.products-table-panel {
+  border-color: #e5dccd;
+  box-shadow: 0 5px 16px #463d320a;
+}
+
+.products-table-panel .table-meta {
+  align-items: center;
+  padding: 15px 18px;
+  background: linear-gradient(90deg, #f8f4ec, #fffcf6);
+}
+
+.products-table-panel .table-meta span:first-child {
+  color: var(--green);
+  font-size: 11px;
+}
+
+.products-table-panel th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f1e8d8;
+}
+
+.products-table-panel tbody tr {
+  transition: background-color .15s ease;
+}
+
+.products-table-panel tbody tr:hover {
+  background: #f7f3e9;
+}
+
+.category-pill {
+  border: 1px solid #d5e0cf;
+  border-radius: 999px;
+}
+
+.catalog-product strong {
+  font-size: 12px;
+}
+
+.catalog-product .catalog-brand {
+  color: #756b5e;
+  font-weight: 500;
+}
+
+.catalog-stock {
+  display: inline-flex;
+  min-width: 32px;
+  min-height: 25px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 7px;
+  background: #e9efe5;
+  border-radius: 6px;
+}
+
+.catalog-stock.low {
+  color: #8d4e27;
+  background: #f5e5ce;
+}
+
+.product-price {
+  font-variant-numeric: tabular-nums;
+}
+
+.products-table-panel .row-actions button {
+  width: 33px;
+  height: 33px;
+  border-radius: 8px;
+  transition: color .15s ease, background-color .15s ease, transform .15s ease;
+}
+
+.products-table-panel .row-actions button:hover {
+  color: var(--green);
+  background: #e9efe5;
+  transform: translateY(-1px);
+}
+
+.products-table-panel .row-actions button:focus-visible {
+  outline: 2px solid #789477;
+  outline-offset: 2px;
+}
+
+.catalog-empty {
+  padding: 48px 20px;
+}
+
+@media (max-width: 600px) {
+  .products-table-panel .table-meta {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+    padding: 13px;
+  }
+}

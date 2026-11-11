@@ -36,3 +36,130 @@
 .settings-grid { grid-template-columns: minmax(0, 680px); }
 
 .settings-panel { padding: 20px; }
+
+.settings-grid {
+    grid-template-columns: minmax(0, 760px);
+}
+
+.settings-panel {
+    gap: 18px;
+    padding: 24px;
+    border-color: #e5dccd;
+    box-shadow: 0 5px 16px #463d320a;
+}
+
+.settings-heading {
+    padding-bottom: 4px;
+}
+
+.settings-heading h2 {
+    color: #3e4c40;
+    font-size: 14px;
+}
+
+.settings-heading p {
+    margin-top: 5px;
+    line-height: 1.5;
+}
+
+.settings-icon {
+    width: 38px;
+    height: 38px;
+    background: #e7efe2;
+    border: 1px solid #d5e0cf;
+    border-radius: 11px;
+}
+
+.settings-panel .field {
+    gap: 7px;
+    color: #62594e;
+    font-weight: 600;
+}
+
+.settings-panel .field input {
+    border-color: #e1d7c8;
+    border-radius: 7px;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.settings-panel .field input:hover {
+    border-color: #b8c8b1;
+}
+
+.settings-panel .field input:focus-visible {
+    border-color: #789477;
+    outline: 0;
+    box-shadow: 0 0 0 3px #78947720;
+}
+
+.settings-panel .field input[readonly] {
+    background: #f7f4ed;
+}
+
+.settings-divider {
+    background: #e8dfd1;
+}
+
+.preference-option {
+    min-height: 68px;
+    padding: 15px;
+    background: linear-gradient(100deg, #f8f4ec, #fffcf6);
+    border-color: #e5dccd;
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+.preference-option:hover {
+    border-color: #b8c8b1;
+    box-shadow: 0 3px 10px #463d320a;
+}
+
+.preference-option:focus-within {
+    outline: 2px solid #789477;
+    outline-offset: 2px;
+}
+
+.preference-option strong {
+    font-size: 12px;
+}
+
+.preference-option small {
+    line-height: 1.5;
+}
+
+.preference-option input {
+    width: 19px;
+    height: 19px;
+    cursor: pointer;
+}
+
+.settings-actions {
+    padding-top: 2px;
+}
+
+.settings-actions .button {
+    min-height: 40px;
+    padding: 0 17px;
+    box-shadow: 0 3px 8px #244a351c;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.settings-actions .button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px #244a3526;
+}
+
+@media (max-width: 600px) {
+    .settings-panel {
+        gap: 15px;
+        padding: 17px 14px;
+    }
+
+    .settings-heading h2 {
+        font-size: 13px;
+    }
+
+    .settings-actions .button {
+        width: 100%;
+        justify-content: center;
+    }
+}

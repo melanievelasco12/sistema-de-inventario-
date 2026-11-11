@@ -1,6 +1,53 @@
-import { Fragment as _Fragment, jsx as _jsx, jsxs as _jsxs } from 'react/jsx-runtime';
 import { Icon } from '../../componentes/Icon.jsx';
 
-export default function Settings({ user, profileName, compactView, saving, onSubmit }) {
-    return _jsx("section", { className: "settings-grid", children: _jsxs("form", { className: "panel settings-panel", onSubmit: onSubmit, children: [_jsxs("div", { className: "panel-heading settings-heading", children: [_jsxs("div", { children: [_jsx("h2", { children: "Perfil de usuario" }), _jsx("p", { children: "El nombre se actualiza en Firebase Authentication." })] }), _jsx("span", { className: "settings-icon", children: _jsx(Icon, { name: "users" }) })] }), _jsxs("label", { className: "field", children: ["Nombre visible", _jsx("input", { name: "displayName", required: true, maxLength: 80, defaultValue: profileName, placeholder: "Tu nombre" })] }), _jsxs("label", { className: "field", children: ["Correo electr\u00F3nico", _jsx("input", { value: user.email ?? '', readOnly: true })] }), _jsx("div", { className: "settings-divider" }), _jsxs("div", { className: "panel-heading settings-heading", children: [_jsxs("div", { children: [_jsx("h2", { children: "Preferencias visuales" }), _jsx("p", { children: "Esta preferencia se guarda en este navegador para tu cuenta." })] }), _jsx("span", { className: "settings-icon", children: _jsx(Icon, { name: "settings" }) })] }), _jsxs("label", { className: "preference-option", children: [_jsxs("span", { children: [_jsx("strong", { children: "Vista compacta" }), _jsx("small", { children: "Reduce el espacio de las tablas para mostrar m\u00E1s filas." })] }), _jsx("input", { name: "compactView", type: "checkbox", defaultChecked: compactView })] }), _jsx("div", { className: "settings-actions", children: _jsxs("button", { className: "button button-primary", disabled: saving, children: [_jsx(Icon, { name: "check" }), saving ? 'Guardando...' : 'Guardar cambios'] }) })] }) });
+export default function Settings({ user, profileName, compactView, darkMode, saving, onSubmit }) {
+    return (
+        <section className="settings-grid">
+            <form className="panel settings-panel" onSubmit={onSubmit}>
+                <div className="panel-heading settings-heading">
+                    <div>
+                        <h2>Perfil de usuario</h2>
+                        <p>El nombre se actualiza en Firebase Authentication.</p>
+                    </div>
+                    <span className="settings-icon"><Icon name="users" /></span>
+                </div>
+                <label className="field">
+                    Nombre visible
+                    <input name="displayName" required maxLength={80} defaultValue={profileName} placeholder="Tu nombre" />
+                </label>
+                <label className="field">
+                    Correo electrónico
+                    <input value={user.email ?? ''} readOnly />
+                </label>
+                <div className="settings-divider" />
+                <div className="panel-heading settings-heading">
+                    <div>
+                        <h2>Preferencias visuales</h2>
+                        <p>Estas preferencias se guardan en este navegador para tu cuenta.</p>
+                    </div>
+                    <span className="settings-icon"><Icon name="settings" /></span>
+                </div>
+                <label className="preference-option">
+                    <span>
+                        <strong>Vista compacta</strong>
+                        <small>Reduce el espacio de las tablas para mostrar más filas.</small>
+                    </span>
+                    <input name="compactView" type="checkbox" defaultChecked={compactView} />
+                </label>
+                <label className="preference-option">
+                    <span>
+                        <strong>Modo oscuro</strong>
+                        <small>Usa colores oscuros en las pantallas del inventario para reducir el brillo.</small>
+                    </span>
+                    <input name="darkMode" type="checkbox" defaultChecked={darkMode} />
+                </label>
+                <div className="settings-actions">
+                    <button className="button button-primary" disabled={saving}>
+                        <Icon name="check" />
+                        {saving ? 'Guardando...' : 'Guardar cambios'}
+                    </button>
+                </div>
+            </form>
+        </section>
+    );
 }

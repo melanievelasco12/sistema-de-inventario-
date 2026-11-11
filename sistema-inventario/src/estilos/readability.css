@@ -1,0 +1,52 @@
+.app-shell .page-subtitle { font-size: 14px; line-height: 1.55; }
+.app-shell .eyebrow { font-size: 11px; }
+.app-shell .button { font-size: 12px; }
+.app-shell .top-user-name,
+.app-shell .today-date { font-size: 12px; }
+.app-shell .search-box input { font-size: 12px; }
+.app-shell .panel-heading h2 { font-size: 15px; }
+.app-shell .panel-heading p { font-size: 12px; line-height: 1.5; }
+.app-shell .text-button { font-size: 12px; }
+.app-shell .stat-label { font-size: 12px; line-height: 1.4; }
+.app-shell .stat-detail { font-size: 11px; line-height: 1.4; }
+.app-shell .table-meta { font-size: 12px; }
+.app-shell th { font-size: 11px; }
+.app-shell td { font-size: 12px; }
+.app-shell td strong { font-size: 12px; }
+.app-shell .field { font-size: 12px; }
+.app-shell .field input,
+.app-shell .field select { font-size: 13px; }
+.app-shell .field small,
+.app-shell .form-hint { font-size: 11px; line-height: 1.5; }
+.app-shell .status-badge,
+.app-shell .movement-type,
+.app-shell .warning-pill { font-size: 10px; }
+.app-shell .footer { font-size: 10px; }
+.app-shell .catalog-product span,
+.app-shell .product-cell span,
+.app-shell .muted-unit { font-size: 10px; }
+.app-shell .product-modal .field small,
+.app-shell .product-modal .stock-fields > p { font-size: 11px; }
+.app-shell .notification-panel p,
+.app-shell .notification-item small { font-size: 11px; line-height: 1.45; }
+.app-shell .shortcut-card strong { font-size: 13px; }
+.app-shell .shortcut-card small { font-size: 11px; }
+.app-shell .report-result-count,
+.app-shell .movement-filter-count { font-size: 11px; }
+.app-shell .infoMovimiento strong { font-size: 12px; }
+.app-shell .infoMovimiento span { font-size: 11px; }
+.app-shell .cantidadMovimiento { font-size: 13px; }
+
+@media (max-width: 600px) {
+    .app-shell .page-subtitle { font-size: 13px; }
+    .app-shell .button { font-size: 11px; }
+    .app-shell .panel-heading h2 { font-size: 14px; }
+    .app-shell .panel-heading p { font-size: 11px; }
+    .app-shell .stat-label { font-size: 11px; }
+    .app-shell .stat-detail { font-size: 10px; }
+    .app-shell th { font-size: 10px; }
+    .app-shell td { font-size: 11px; }
+    .app-shell .field { font-size: 11px; }
+    .app-shell .field input,
+    .app-shell .field select { font-size: 12px; }
+}
