@@ -1,4 +1,4 @@
-import { browserLocalPersistence, browserSessionPersistence, createUserWithEmailAndPassword, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signInWithRedirect, signOut, updateProfile } from 'firebase/auth';
+import { browserLocalPersistence, browserSessionPersistence, createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 import { auth, firebaseConfigured } from './config/firebase';
 import { createProduct, deleteProduct, getInventoryErrorMessage, registerMovement, subscribeToInventory, subscribeToCategories, updateProduct } from './config/firestore';
@@ -125,7 +125,6 @@ function App() {
             setProducts([]);
             setMovements([]);
             setCategories([]);
-            setSuppliers([]);
             setProductSearch('');
             setProfileName(currentUser?.displayName ?? '');
             if (currentUser) {
@@ -140,23 +139,15 @@ function App() {
                 setCompactView(false);
             }
             setAuthReady(true);
-        }, () => {
-            setAuthError('No se pudo comprobar la sesión. Revisa tu conexión y vuelve a cargar la página.');
+        }, (error) => {
+            const detail = error instanceof Error ? error.message : '';
+            setAuthError(isFirebaseAuthError(error)
+                ? authErrorMessage(error.code)
+                : detail
+                    ? `No se pudo comprobar la sesión: ${detail}`
+                    : 'No se pudo comprobar la sesión. Revisa tu conexión y vuelve a cargar la página.');
             setAuthReady(true);
         });
-    }, []);
-    useEffect(() => {
-        if (!auth)
-            return;
-        let active = true;
-        void getRedirectResult(auth).catch((error) => {
-            if (!active)
-                return;
-            setAuthError(isFirebaseAuthError(error) ? authErrorMessage(error.code) : 'No se pudo completar el acceso con Google. Inténtalo de nuevo.');
-        });
-        return () => {
-            active = false;
-        };
     }, []);
     useEffect(() => {
         if (!user)
@@ -264,8 +255,11 @@ function App() {
         setAuthNotice('');
         setAuthBusy(true);
         try {
-            await setPersistence(auth, rememberSession ? browserLocalPersistence : browserSessionPersistence);
-            await signInWithRedirect(auth, new GoogleAuthProvider());
+            const provider = new GoogleAuthProvider();
+            provider.setCustomParameters({ prompt: 'select_account' });
+            const signIn = signInWithPopup(auth, provider);
+            const persistence = setPersistence(auth, rememberSession ? browserLocalPersistence : browserSessionPersistence);
+            await Promise.all([signIn, persistence]);
         }
         catch (error) {
             setAuthError(isFirebaseAuthError(error) ? authErrorMessage(error.code) : 'No se pudo iniciar sesión con Google. Inténtalo de nuevo.');

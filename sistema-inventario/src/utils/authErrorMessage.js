@@ -10,6 +10,12 @@ export function authErrorMessage(code) {
         return 'Se bloquearon temporalmente los intentos. Espera un momento y vuelve a intentarlo.';
     if (code === 'auth/network-request-failed')
         return 'No hay conexión con Firebase. Revisa tu internet e inténtalo de nuevo.';
+    if (code === 'auth/invalid-api-key')
+        return 'La clave de Firebase no es válida. Comprueba VITE_FIREBASE_API_KEY en .env.local y que pertenezca al proyecto correcto.';
+    if (code === 'auth/configuration-not-found')
+        return 'Firebase Authentication no está configurado para este proyecto. Actívalo en Firebase Console → Authentication.';
+    if (code === 'auth/auth-domain-config-required')
+        return 'Falta el dominio de autenticación. Comprueba VITE_FIREBASE_AUTH_DOMAIN en .env.local.';
     if (code === 'auth/invalid-email')
         return 'Escribe un correo electrónico válido.';
     if (code === 'auth/email-already-in-use')
@@ -30,5 +36,5 @@ export function authErrorMessage(code) {
         return 'Este dominio no está autorizado para iniciar sesión. Añade localhost, 127.0.0.1 o el dominio de la aplicación en Firebase Authentication → Configuración → Dominios autorizados.';
     if (code === 'auth/account-exists-with-different-credential')
         return 'Ya existe una cuenta con ese correo usando otro método de acceso.';
-    return 'No se pudo iniciar sesión. Revisa que la cuenta exista y vuelve a intentarlo.';
+    return `No se pudo completar la autenticación (código: ${code}). Revisa la configuración del proveedor Google y los dominios autorizados en Firebase.`;
 }
