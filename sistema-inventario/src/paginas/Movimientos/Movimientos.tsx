@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import Table from '../../componentes/Table/Table.jsx';
-import { EmptyState } from '../../componentes/common.jsx';
+import Table from '../../componentes/Table/Table';
+import { EmptyState } from '../../componentes/common';
+import type { Movement, MovementType } from '../../types';
 
 const movementDateTime = new Intl.DateTimeFormat('es-EC', {
     day: '2-digit',
@@ -16,19 +17,24 @@ const monthOptions = Array.from({ length: 12 }, (_, index) => ({
     label: monthFormatter.format(new Date(Date.UTC(2024, index, 1))),
 }));
 
-function getMovementDate(value) {
+function getMovementDate(value: string): Date | null {
     const date = new Date(value);
     return Number.isNaN(date.getTime()) ? null : date;
 }
 
-export default function Movements({ movements, onNew }) {
+interface MovementsProps {
+    movements: Movement[];
+    onNew: (type: MovementType) => void;
+}
+
+export default function Movements({ movements, onNew }: MovementsProps) {
     const [day, setDay] = useState('');
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
     const [currentYear] = useState(() => new Date().getFullYear());
     const years = [...new Set([currentYear, ...movements
         .map((movement) => getMovementDate(movement.createdAt)?.getFullYear())
-        .filter((movementYear) => movementYear !== undefined)])].sort((a, b) => b - a);
+        .filter((movementYear): movementYear is number => movementYear !== undefined)])].sort((a, b) => b - a);
     const filteredMovements = movements.filter((movement) => {
         const date = getMovementDate(movement.createdAt);
         return date
@@ -108,7 +114,12 @@ export default function Movements({ movements, onNew }) {
     );
 }
 
-export function MovementTable({ movements, hasDateFilter }) {
+interface MovementTableProps {
+    movements: Movement[];
+    hasDateFilter: boolean;
+}
+
+export function MovementTable({ movements, hasDateFilter }: MovementTableProps) {
     if (!movements.length) {
         return hasDateFilter
             ? <EmptyState title="No hay movimientos para esta fecha" detail="Prueba con otro día, mes o año, o limpia los filtros." />

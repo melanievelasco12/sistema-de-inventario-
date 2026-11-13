@@ -1,50 +1,66 @@
-import { browserLocalPersistence, browserSessionPersistence, createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
-import { useEffect, useState } from 'react';
+import { browserLocalPersistence, browserSessionPersistence, createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, sendPasswordResetEmail, setPersistence, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile, type User } from 'firebase/auth';
+import { useEffect, useState, type ComponentProps, type ElementType, type FormEvent, type Key, type ReactElement } from 'react';
 import { auth, firebaseConfigured } from './config/firebase';
 import { createProduct, deleteProduct, getInventoryErrorMessage, registerMovement, subscribeToInventory, subscribeToCategories, updateProduct } from './config/firestore';
-import { Icon } from './componentes/Icon.jsx';
-import Modal from './componentes/Modal/Modal.jsx';
-import Sidebar from './navegacion/Sidebar.jsx';
-import { AccessErrorScreen, LoadingScreen, LoginScreen } from './paginas/Login/Login.jsx';
-import Dashboard from './paginas/Inicio/Inicio.jsx';
-import Movements from './paginas/Movimientos/Movimientos.jsx';
-import Products from './paginas/Productos/Productos.jsx';
-import Reports from './paginas/Reportes/Reportes.jsx';
-import Settings from './paginas/Configuracion/Configuracion.jsx';
-import { pageDescriptions } from './paginas/pageDescriptions.js';
-import { authErrorMessage, isFirebaseAuthError } from './utils/authErrorMessage.js';
-import { categorySlug, normalizeLabel } from './utils/categories.js';
-import { Fragment as _Fragment, jsx as _jsx, jsxs as _jsxs } from 'react/jsx-runtime';
+import { Icon } from './componentes/Icon';
+import Modal from './componentes/Modal/Modal';
+import Sidebar from './navegacion/Sidebar';
+import { AccessErrorScreen, LoadingScreen, LoginScreen } from './paginas/Login/Login';
+import Dashboard from './paginas/Inicio/Inicio';
+import Movements from './paginas/Movimientos/Movimientos';
+import Products from './paginas/Productos/Productos';
+import Reports from './paginas/Reportes/Reportes';
+import Settings from './paginas/Configuracion/Configuracion';
+import { pageDescriptions } from './paginas/pageDescriptions';
+import { authErrorMessage, isFirebaseAuthError } from './utils/authErrorMessage';
+import { categorySlug, normalizeLabel } from './utils/categories';
+import type { Category, ModalView, Movement, MovementType, PageView, Product } from './types';
+import { Fragment as _Fragment, jsx as jsxRuntime, jsxs as jsxsRuntime } from 'react/jsx-runtime';
+
+function _jsx<T extends ElementType>(type: T, props: ComponentProps<T>, key?: Key): ReactElement {
+    return jsxRuntime(type, props, key);
+}
+
+function _jsxs<T extends ElementType>(type: T, props: ComponentProps<T>, key?: Key): ReactElement {
+    return jsxsRuntime(type, props, key);
+}
 function App() {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<User | null>(null);
     const [authReady, setAuthReady] = useState(() => !auth);
     const [authError, setAuthError] = useState('');
     const [authNotice, setAuthNotice] = useState('');
     const [authBusy, setAuthBusy] = useState(false);
     const [registeredEmail, setRegisteredEmail] = useState('');
-    const [products, setProducts] = useState([]);
-    const [movements, setMovements] = useState([]);
-    const [categories, setCategories] = useState([]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [movements, setMovements] = useState<Movement[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
     const [categoryError, setCategoryError] = useState('');
-    const [inventoryStatus, setInventoryStatus] = useState('loading');
+    const [inventoryStatus, setInventoryStatus] = useState<'loading' | 'ready' | 'error'>('loading');
     const [firestoreError, setFirestoreError] = useState('');
-    const [view, setView] = useState('dashboard');
+    const [view, setView] = useState<PageView>('dashboard');
     const [search, setSearch] = useState('');
     const [productSearch, setProductSearch] = useState('');
     const [notice, setNotice] = useState('');
-    const [modal, setModal] = useState(null);
-    const [editingProduct, setEditingProduct] = useState(null);
+    const [modal, setModal] = useState<ModalView>(null);
+    const [editingProduct, setEditingProduct] = useState<Product | null>(null);
     const [categorySelection, setCategorySelection] = useState('');
-    const [movementType, setMovementType] = useState('entrada');
+    const [movementType, setMovementTypeValue] = useState<MovementType>('entrada');
     const [saving, setSaving] = useState(false);
     const [profileName, setProfileName] = useState('');
     const [compactView, setCompactView] = useState(false);
     const [darkMode, setDarkMode] = useState(false);
     const [notificationsOpen, setNotificationsOpen] = useState(false);
-    const [notificationElement, setNotificationElement] = useState(null);
-    const [productDialogElement, setProductDialogElement] = useState(null);
-    const [productDialogOpener, setProductDialogOpener] = useState(null);
+    const [notificationElement, setNotificationElement] = useState<HTMLDivElement | null>(null);
+    const [productDialogElement, setProductDialogElement] = useState<HTMLElement | null>(null);
+    const [productDialogOpener, setProductDialogOpener] = useState<HTMLElement | null>(null);
     const [today] = useState(() => new Date());
+    function setMovementType(value: string): void {
+        if (value !== 'entrada' && value !== 'salida') {
+            throw new Error(`Tipo de movimiento inválido: ${value}`);
+        }
+        setMovementTypeValue(value);
+    }
+
     useEffect(() => {
         if (modal !== 'product')
             return;
@@ -52,13 +68,13 @@ function App() {
         if (!dialog)
             return;
         const focusableSelector = 'a[href],button:not([disabled]),input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
-        const getFocusableElements = () => [...(dialog?.querySelectorAll(focusableSelector) ?? [])]
+        const getFocusableElements = () => [...(dialog?.querySelectorAll<HTMLElement>(focusableSelector) ?? [])]
             .filter((element) => element.getAttribute('aria-hidden') !== 'true' && element.getClientRects().length > 0);
         const firstFocusable = getFocusableElements()[0];
-        const firstFormControl = dialog?.querySelector('form input:not([disabled]):not([type="hidden"]),form select:not([disabled]),form textarea:not([disabled]),form button:not([disabled])');
-        const heading = dialog?.querySelector('#product-modal-title');
+        const firstFormControl = dialog?.querySelector<HTMLElement>('form input:not([disabled]):not([type="hidden"]),form select:not([disabled]),form textarea:not([disabled]),form button:not([disabled])');
+        const heading = dialog?.querySelector<HTMLElement>('#product-modal-title');
         (firstFormControl ?? heading ?? firstFocusable ?? dialog)?.focus();
-        function keepFocusInDialog(event) {
+        function keepFocusInDialog(event: KeyboardEvent) {
             if (!dialog)
                 return;
             if (event.key === 'Escape') {
@@ -101,12 +117,12 @@ function App() {
     useEffect(() => {
         if (!notificationsOpen)
             return;
-        function closeOnOutsideClick(event) {
+        function closeOnOutsideClick(event: PointerEvent) {
             if (event.target instanceof Node && !notificationElement?.contains(event.target)) {
                 setNotificationsOpen(false);
             }
         }
-        function closeOnEscape(event) {
+        function closeOnEscape(event: KeyboardEvent) {
             if (event.key === 'Escape')
                 setNotificationsOpen(false);
         }
@@ -172,7 +188,7 @@ function App() {
             setCategoryError(getInventoryErrorMessage(error));
         });
     }, [user]);
-    async function handleSignIn(event) {
+    async function handleSignIn(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         if (!auth)
             return;
@@ -200,7 +216,7 @@ function App() {
         }
     }
 
-    async function handleRegister(event, onSuccess) {
+    async function handleRegister(event: FormEvent<HTMLFormElement>, onSuccess: (email: string) => void) {
         event.preventDefault();
         if (!auth)
             return;
@@ -251,7 +267,7 @@ function App() {
             setAuthBusy(false);
         }
     }
-    async function handleGoogleSignIn(rememberSession) {
+    async function handleGoogleSignIn(rememberSession: boolean) {
         if (!auth)
             return;
         setAuthError('');
@@ -271,7 +287,7 @@ function App() {
             setAuthBusy(false);
         }
     }
-    async function handlePasswordReset(email) {
+    async function handlePasswordReset(email: string) {
         if (!auth || !email)
             return;
         setAuthError('');
@@ -288,7 +304,7 @@ function App() {
             setAuthBusy(false);
         }
     }
-    async function handleSignOut() {
+    async function handleSignOut(): Promise<void> {
         if (!auth)
             return;
         setAuthError('');
@@ -325,17 +341,17 @@ function App() {
         const query = search.trim().toLowerCase();
         return !query || `${movement.productName} ${movement.note} ${movement.type}`.toLowerCase().includes(query);
     });
-    function openProduct(product) {
+    function openProduct(product?: Product) {
         setProductDialogOpener(document.activeElement instanceof HTMLElement ? document.activeElement : null);
         setEditingProduct(product ?? null);
         setCategorySelection(product?.category ?? categories[0]?.name ?? '');
         setModal('product');
     }
-    function submitProductSearch(event) {
+    function submitProductSearch(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         setView('products');
     }
-    async function submitSettings(event) {
+    async function submitSettings(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const signedInUser = user;
         if (!signedInUser)
@@ -372,7 +388,7 @@ function App() {
             setSaving(false);
         }
     }
-    async function submitProduct(event) {
+    async function submitProduct(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const signedInUser = user;
         if (!signedInUser)
@@ -436,7 +452,7 @@ function App() {
             setSaving(false);
         }
     }
-    async function handleDeleteProduct(product) {
+    async function handleDeleteProduct(product: Product) {
         if (movements.some((movement) => movement.productId === product.id)) {
             setNotice('No se puede eliminar este producto porque tiene movimientos asociados.');
             return;
@@ -451,7 +467,7 @@ function App() {
             setNotice(getInventoryErrorMessage(error));
         }
     }
-    async function submitMovement(event) {
+    async function submitMovement(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
         const signedInUser = user;
         if (!signedInUser)
@@ -478,7 +494,7 @@ function App() {
             setSaving(false);
         }
     }
-    function exportReport() {
+    function exportReport(): void {
         const rows = [
             ['Código', 'Producto', 'Marca', 'Categoría', 'Existencias', 'Unidad', 'Stock mínimo', 'Estado'],
             ...products.map((product) => [
@@ -501,7 +517,7 @@ function App() {
         window.setTimeout(() => URL.revokeObjectURL(url), 1000);
         setNotice('Reporte de inventario descargado.');
     }
-    const titles = {
+    const titles: Record<PageView, string> = {
         dashboard: 'Inicio',
         products: 'Catálogo de Productos',
         movements: 'Movimientos',

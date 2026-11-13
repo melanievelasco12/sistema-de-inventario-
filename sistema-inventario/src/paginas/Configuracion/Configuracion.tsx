@@ -1,6 +1,17 @@
-import { Icon } from '../../componentes/Icon.jsx';
+import { Icon } from '../../componentes/Icon';
+import type { FormEventHandler } from 'react';
+import type { User } from 'firebase/auth';
 
-export default function Settings({ user, profileName, compactView, darkMode, saving, onSubmit }) {
+interface SettingsProps {
+    user: User;
+    profileName: string;
+    compactView: boolean;
+    darkMode: boolean;
+    saving: boolean;
+    onSubmit: FormEventHandler<HTMLFormElement>;
+}
+
+export default function Settings({ user, profileName, compactView, darkMode, saving, onSubmit }: SettingsProps) {
     return (
         <section className="settings-grid">
             <form className="panel settings-panel" onSubmit={onSubmit}>

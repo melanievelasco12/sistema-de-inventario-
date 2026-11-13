@@ -1,6 +1,6 @@
 # Sistema de inventario — PASO STROCK
 
-Aplicación web de control de existencias con React, JavaScript/JSX, Firebase Authentication y Cloud Firestore.
+Aplicación web de control de existencias con React, TypeScript/TSX, Firebase Authentication y Cloud Firestore.
 
 ## Estructura del proyecto
 
@@ -8,8 +8,8 @@ Aplicación web de control de existencias con React, JavaScript/JSX, Firebase Au
 sistema-inventario/
 ├── public/                 Recursos estáticos publicados tal cual
 ├── src/
-│   ├── App.jsx              Coordinación de sesión, navegación y acciones
-│   ├── main.jsx             Arranque de React
+│   ├── App.tsx              Coordinación de sesión, navegación y acciones
+│   ├── main.tsx             Arranque de React
 │   ├── componentes/         Componentes reutilizables (Button, Modal, Table)
 │   ├── config/              Firebase y operaciones de Firestore
 │   ├── navegacion/           Menú y navegación
@@ -19,7 +19,7 @@ sistema-inventario/
 ├── firestore.rules          Reglas de acceso de Firestore
 ├── index.html               Entrada HTML de Vite
 ├── package.json             Dependencias y comandos
-└── vite.config.js           Configuración de Vite
+└── vite.config.ts           Configuración de Vite
 ```
 
 Las pantallas adicionales de categorías, proveedores y configuración se conservan dentro de `src/paginas/`. Los estilos siguen siendo CSS global: varias pantallas comparten clases, así que convertirlos a CSS Modules solo por cambiar el nombre podría ocultar esos estilos.
@@ -37,6 +37,8 @@ cd .\sistema-inventario
 npm.cmd install
 npm.cmd run dev
 ```
+
+El proyecto utiliza TypeScript con React. `npm.cmd run typecheck` valida los tipos y `npm.cmd run build` ejecuta esa validación antes de generar la versión de producción.
 
 La configuración local de Firebase se lee desde `.env.local`, excluido de Git. Copia `.env.example` a `.env.local` y completa `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID` y `VITE_FIREBASE_APP_ID` con los datos de tu aplicación web de Firebase. Reinicia Vite después de editarlas.
 

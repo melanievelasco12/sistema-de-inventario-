@@ -1,7 +1,9 @@
-import { Icon } from '../componentes/Icon.jsx';
-import Button from '../componentes/Button/Button.jsx';
+import { Icon } from '../componentes/Icon';
+import Button from '../componentes/Button/Button';
+import type { IconName } from '../componentes/Icon';
+import type { PageView, Product } from '../types';
 
-const navigationItems = [
+const navigationItems: readonly (readonly [PageView, string, IconName])[] = [
   ['dashboard', 'Inicio', 'home'],
   ['products', 'Productos', 'box'],
   ['movements', 'Movimientos', 'arrows'],
@@ -9,7 +11,13 @@ const navigationItems = [
   ['settings', 'Configuraci\u00f3n', 'settings'],
 ]
 
-export default function Navigation({ view, lowStock, onNavigate }) {
+interface NavigationProps {
+  view: PageView;
+  lowStock: Product[];
+  onNavigate: (view: PageView) => void;
+}
+
+export default function Navigation({ view, lowStock, onNavigate }: NavigationProps) {
   return (
     <nav className="main-nav" aria-label={'Navegaci\u00f3n principal'}>
       {navigationItems.map(([key, label, icon]) => (

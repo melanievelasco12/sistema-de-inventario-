@@ -1,14 +1,24 @@
 import { useState } from 'react';
-import Table from '../../componentes/Table/Table.jsx';
-import { Icon } from '../../componentes/Icon.jsx';
-import { StatCard, StatusBadge } from '../../componentes/common.jsx';
-import { dateTime } from '../../utils/formatters.js';
+import Table from '../../componentes/Table/Table';
+import { Icon } from '../../componentes/Icon';
+import { StatCard, StatusBadge } from '../../componentes/common';
+import { dateTime } from '../../utils/formatters';
+import type { Movement, Product } from '../../types';
 import estilos from './Inicio.module.css';
 
 // Cuántas filas se muestran en cada panel (los dos usan el mismo número para quedar parejos)
 const FILAS_VISIBLES = 6;
 
-export default function Dashboard({ products, movements, lowStock, onProducts, onMovements }) {
+interface DashboardProps {
+  products: Product[];
+  movements: Movement[];
+  lowStock: Product[];
+  totalUnits: number;
+  onProducts: () => void;
+  onMovements: () => void;
+}
+
+export default function Dashboard({ products, movements, lowStock, onProducts, onMovements }: DashboardProps) {
   const entradas = movements.filter((movement) => movement.type === 'entrada');
   const salidas = movements.filter((movement) => movement.type === 'salida');
   const unidadesEntradas = entradas.reduce((sum, movement) => sum + movement.quantity, 0);

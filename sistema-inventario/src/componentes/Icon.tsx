@@ -1,5 +1,11 @@
 import { Fragment as _Fragment, jsx as _jsx, jsxs as _jsxs } from 'react/jsx-runtime';
-export function Icon({ name }) {
+
+export type IconName = 'grid' | 'box' | 'arrows' | 'chart' | 'search' | 'bell' | 'plus'
+    | 'edit' | 'trash' | 'download' | 'close' | 'leaf' | 'mail' | 'lock' | 'eye'
+    | 'eyeOff' | 'arrowRight' | 'home' | 'tag' | 'users' | 'settings' | 'phone'
+    | 'pin' | 'check' | 'entrada' | 'salida';
+
+export function Icon({ name }: { name: IconName }) {
     const paths = {
         grid: _jsxs(_Fragment, { children: [_jsx("rect", { x: "3", y: "3", width: "7", height: "7", rx: "1" }), _jsx("rect", { x: "14", y: "3", width: "7", height: "7", rx: "1" }), _jsx("rect", { x: "14", y: "14", width: "7", height: "7", rx: "1" }), _jsx("rect", { x: "3", y: "14", width: "7", height: "7", rx: "1" })] }),
         box: _jsxs(_Fragment, { children: [_jsx("path", { d: "m12 3 9 5-9 5-9-5 9-5Z" }), _jsx("path", { d: "m3 8 9 5 9-5M3 8v9l9 5 9-5V8M12 13v9" })] }),

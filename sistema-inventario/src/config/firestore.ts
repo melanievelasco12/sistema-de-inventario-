@@ -1,24 +1,38 @@
 import { collection, doc, onSnapshot, orderBy, query, runTransaction, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from './firebase';
-function requireDb() {
+import type { DocumentData, Firestore, Unsubscribe } from 'firebase/firestore';
+import type {
+    Category,
+    InventorySnapshot,
+    Movement,
+    MovementType,
+    Product,
+    ProductInput,
+    ProductUpdate,
+} from '../types';
+
+function requireDb(): Firestore {
     if (!db)
         throw new Error('Firebase no está configurado. Revisa las variables VITE_FIREBASE_* en .env.local.');
     return db;
 }
-function organizationPath(collectionName) {
+function organizationPath(collectionName: string): string {
     const uid = auth?.currentUser?.uid;
     if (!uid)
         throw new Error('Debes iniciar sesión para acceder a tu inventario.');
     return `organizations/${uid}/${collectionName}`;
 }
-export function subscribeToInventory(onChange, onError) {
+export function subscribeToInventory(
+    onChange: (inventory: InventorySnapshot) => void,
+    onError: (error: Error) => void,
+): Unsubscribe {
     const database = requireDb();
     const productsRef = query(collection(database, organizationPath('products')), orderBy('name'));
     const movementsRef = query(collection(database, organizationPath('movements')), orderBy('createdAt', 'desc'));
-    let products;
-    let movements;
-    let productsUnsubscribe = () => undefined;
-    let movementsUnsubscribe = () => undefined;
+    let products: Product[] | undefined;
+    let movements: Movement[] | undefined;
+    let productsUnsubscribe: Unsubscribe = () => undefined;
+    let movementsUnsubscribe: Unsubscribe = () => undefined;
     let stopped = false;
     const stop = () => {
         if (stopped)
@@ -57,7 +71,10 @@ export function subscribeToInventory(onChange, onError) {
     });
     return stop;
 }
-export function subscribeToCategories(onChange, onError) {
+export function subscribeToCategories(
+    onChange: (categories: Category[]) => void,
+    onError: (error: Error) => void,
+): Unsubscribe {
     const categoriesRef = query(collection(requireDb(), organizationPath('categories')), orderBy('name'));
     return onSnapshot(categoriesRef, (snapshot) => {
         try {
@@ -68,7 +85,7 @@ export function subscribeToCategories(onChange, onError) {
         }
     }, onError);
 }
-export async function createProduct(input, uid) {
+export async function createProduct(input: ProductInput, uid: string): Promise<void> {
     const database = requireDb();
     const productCode = input.code.trim().toUpperCase();
     const productRef = productCode
@@ -118,7 +135,7 @@ export async function createProduct(input, uid) {
         }
     });
 }
-export async function updateProduct(product) {
+export async function updateProduct(product: ProductUpdate): Promise<void> {
     const database = requireDb();
     const productRef = doc(database, organizationPath(`products/${product.id}`));
     const categoryRef = doc(database, organizationPath(`categories/${categoryDocumentId(product.category)}`));
@@ -146,7 +163,7 @@ export async function updateProduct(product) {
         });
     });
 }
-export async function deleteProduct(product) {
+export async function deleteProduct(product: Product): Promise<void> {
     const database = requireDb();
     const productRef = doc(database, organizationPath(`products/${product.id}`));
     await runTransaction(database, async (transaction) => {
@@ -160,7 +177,13 @@ export async function deleteProduct(product) {
         transaction.delete(productRef);
     });
 }
-export async function registerMovement(productId, type, quantity, note, uid) {
+export async function registerMovement(
+    productId: string,
+    type: MovementType,
+    quantity: number,
+    note: string,
+    uid: string,
+): Promise<void> {
     const database = requireDb();
     const productRef = doc(database, organizationPath(`products/${productId}`));
     const movementRef = doc(collection(database, organizationPath('movements')));
@@ -191,7 +214,7 @@ export async function registerMovement(productId, type, quantity, note, uid) {
         });
     });
 }
-export function getInventoryErrorMessage(error) {
+export function getInventoryErrorMessage(error: unknown): string {
     if (error instanceof InventoryError) {
         if (error.code === 'duplicate-code')
             return 'Ya existe un producto con ese código.';
@@ -215,7 +238,7 @@ export function getInventoryErrorMessage(error) {
         return 'Firestore requiere una configuración adicional. Revisa el mensaje de error en la consola de Firebase.';
     return error instanceof Error ? error.message : 'Ocurrió un error inesperado al guardar los datos en Firebase.';
 }
-function readProduct(id, data) {
+function readProduct(id: string, data: DocumentData): Product {
     if (typeof data.code !== 'string'
         || typeof data.name !== 'string'
         || (data.brand !== undefined && (typeof data.brand !== 'string' || data.brand.length > 80))
@@ -243,17 +266,17 @@ function readProduct(id, data) {
         updatedAt: toIsoString(data.updatedAt),
     };
 }
-function readCategory(id, data) {
+function readCategory(id: string, data: DocumentData): Category {
     if (typeof data.name !== 'string' || data.name.trim().length === 0) {
         throw new Error(`La categoría ${id} contiene datos incompletos o inválidos en Firestore.`);
     }
     return { id, name: data.name, createdAt: toIsoString(data.createdAt) };
 }
-function categoryDocumentId(name) {
+function categoryDocumentId(name: string): string {
     const slug = name.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     return slug || `category-${Array.from(name.trim()).map((character) => character.codePointAt(0)?.toString(16)).join('-')}`;
 }
-function readMovement(id, data) {
+function readMovement(id: string, data: DocumentData): Movement {
     if (typeof data.productId !== 'string'
         || typeof data.productName !== 'string'
         || (data.type !== 'entrada' && data.type !== 'salida')
@@ -274,24 +297,24 @@ function readMovement(id, data) {
         createdAt: toIsoString(data.createdAt),
     };
 }
-function isNonNegativeInteger(value) {
+function isNonNegativeInteger(value: unknown): value is number {
     return typeof value === 'number' && Number.isInteger(value) && value >= 0;
 }
-function isNonNegativePrice(value) {
+function isNonNegativePrice(value: unknown): value is number {
     return typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 999999999;
 }
-function toIsoString(value) {
+function toIsoString(value: unknown): string {
     if (value && typeof value === 'object' && 'toDate' in value && typeof value.toDate === 'function') {
         return value.toDate().toISOString();
     }
     throw new Error('Se encontró un registro con fecha inválida en Firestore.');
 }
-function toError(value) {
+function toError(value: unknown): Error {
     return value instanceof Error ? value : new Error(String(value));
 }
 class InventoryError extends Error {
-    code;
-    constructor(code) {
+    code: 'duplicate-code' | 'product-not-found' | 'product-has-movements' | 'invalid-quantity' | 'insufficient-stock';
+    constructor(code: InventoryError['code']) {
         super(code);
         this.code = code;
     }

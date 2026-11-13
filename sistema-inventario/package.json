@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc --noEmit && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "firebase": "^13.0.0",
@@ -16,7 +17,11 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^6.1.2",
+    "@types/node": "^22.15.30",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.6",
     "oxlint": "^1.88.0",
+    "typescript": "^5.8.3",
     "vite": "^8.3.4"
   }
 }

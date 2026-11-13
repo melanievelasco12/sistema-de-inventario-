@@ -1,8 +1,8 @@
-export function isFirebaseAuthError(error) {
+export function isFirebaseAuthError(error: unknown): error is { code: string } {
     return typeof error === 'object' && error !== null && 'code' in error && typeof error.code === 'string';
 }
 
-export function authErrorMessage(code) {
+export function authErrorMessage(code: string): string {
     if (code === 'auth/invalid-credential' || code === 'auth/user-not-found' || code === 'auth/wrong-password') {
         return 'El correo o la contraseña no son correctos.';
     }

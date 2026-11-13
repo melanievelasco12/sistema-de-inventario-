@@ -1,13 +1,25 @@
 import { useState } from 'react';
-import { Icon, GoogleMark } from '../../componentes/Icon.jsx';
+import { Icon, GoogleMark } from '../../componentes/Icon';
+import type { FormEvent, FormEventHandler } from 'react';
 
-export function LoginScreen({ configured, error, notice, busy, initialEmail, onClearMessages, onSubmit, onRegister, onGoogleSignIn, onPasswordReset }) {
+interface LoginScreenProps {
+    configured: boolean;
+    error: string;
+    notice: string;
+    busy: boolean;
+    initialEmail: string;
+    onClearMessages: () => void;
+    onSubmit: FormEventHandler<HTMLFormElement>;
+    onRegister: (event: FormEvent<HTMLFormElement>, onSuccess: (email: string) => void) => void | Promise<void>;
+    onGoogleSignIn: (rememberSession: boolean) => void | Promise<void>;
+    onPasswordReset: (email: string) => void | Promise<void>;
+}
+
+export function LoginScreen({ configured, error, notice, busy, initialEmail, onClearMessages, onSubmit, onRegister, onGoogleSignIn, onPasswordReset }: LoginScreenProps) {
     const [email, setEmail] = useState(initialEmail);
     const [rememberSession, setRememberSession] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [registering, setRegistering] = useState(false);
-    const handleSubmit = registering ? onRegister : onSubmit;
-
     return (
         <main className="auth-screen login-screen">
             <div className="login-orbit login-orbit-left" aria-hidden="true" />
@@ -34,7 +46,7 @@ export function LoginScreen({ configured, error, notice, busy, initialEmail, onC
                         setEmail(registeredEmail);
                         setShowPassword(false);
                     })
-                    : handleSubmit(event)}>
+                    : onSubmit(event)}>
                     {registering && (
                         <label className="field login-field">
                             <span>Nombre completo</span>
@@ -108,7 +120,7 @@ export function LoginScreen({ configured, error, notice, busy, initialEmail, onC
     );
 }
 
-export function LoadingScreen({ message }) {
+export function LoadingScreen({ message }: { message: string }) {
     return (
         <div className="auth-screen">
             <div className="auth-card auth-loading">
@@ -119,7 +131,13 @@ export function LoadingScreen({ message }) {
     );
 }
 
-export function AccessErrorScreen({ message, onRetry, onSignOut }) {
+interface AccessErrorScreenProps {
+    message: string;
+    onRetry: () => void;
+    onSignOut: () => void | Promise<void>;
+}
+
+export function AccessErrorScreen({ message, onRetry, onSignOut }: AccessErrorScreenProps) {
     return (
         <main className="auth-screen">
             <section className="auth-card access-card">

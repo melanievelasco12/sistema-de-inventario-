@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import Table from '../../componentes/Table/Table.jsx';
-import { Icon } from '../../componentes/Icon.jsx';
-import { EmptyState, StatCard, StatusBadge } from '../../componentes/common.jsx';
+import Table from '../../componentes/Table/Table';
+import { Icon } from '../../componentes/Icon';
+import { EmptyState, StatCard, StatusBadge } from '../../componentes/common';
+import type { CategoryStock, DailyMovementTotals, Movement, MovementType, Product } from '../../types';
 
 const chartColors = ['#5b8065', '#8eb69a', '#d2a66f', '#7b91b5', '#bd8270', '#9c88b8', '#c4b35e', '#75a9a7'];
 const pieRadius = 42;
 const pieCircumference = 2 * Math.PI * pieRadius;
 
-function getCategoryStock(products) {
+function getCategoryStock(products: Product[]): CategoryStock[] {
     const stockByCategory = new Map();
     products.forEach((product) => {
         const category = product.category || 'Sin categoría';
@@ -19,7 +20,7 @@ function getCategoryStock(products) {
         .sort((a, b) => b.stock - a.stock);
 }
 
-function getRecentMovementTotals(movements) {
+function getRecentMovementTotals(movements: Movement[]): DailyMovementTotals[] {
     const days = Array.from({ length: 7 }, (_, index) => {
         const date = new Date();
         date.setHours(0, 0, 0, 0);
@@ -46,7 +47,7 @@ function getRecentMovementTotals(movements) {
     return days;
 }
 
-function CategoryPieChart({ items }) {
+function CategoryPieChart({ items }: { items: CategoryStock[] }) {
     const total = items.reduce((sum, item) => sum + item.stock, 0);
     const segments = items.map((item, index) => ({
         ...item,
@@ -88,16 +89,16 @@ function CategoryPieChart({ items }) {
     );
 }
 
-function MovementLineChart({ days }) {
+function MovementLineChart({ days }: { days: DailyMovementTotals[] }) {
     const chartWidth = 360;
     const chartHeight = 160;
     const plotTop = 12;
     const plotBottom = 122;
     const plotHeight = plotBottom - plotTop;
     const maxValue = Math.max(1, ...days.flatMap((day) => [day.entrada, day.salida]));
-    const pointX = (index) => 30 + index * 50;
-    const pointY = (value) => plotBottom - value / maxValue * plotHeight;
-    const linePath = (type) => days.map((day, index) => `${index === 0 ? 'M' : 'L'} ${pointX(index)} ${pointY(day[type])}`).join(' ');
+    const pointX = (index: number) => 30 + index * 50;
+    const pointY = (value: number) => plotBottom - value / maxValue * plotHeight;
+    const linePath = (type: MovementType) => days.map((day, index) => `${index === 0 ? 'M' : 'L'} ${pointX(index)} ${pointY(day[type])}`).join(' ');
     const dateLabel = new Intl.DateTimeFormat('es-EC', { day: '2-digit', month: 'short' });
 
     return (
@@ -125,7 +126,14 @@ function MovementLineChart({ days }) {
     );
 }
 
-export default function Reports({ products, movements, lowStock, onExport }) {
+interface ReportsProps {
+    products: Product[];
+    movements: Movement[];
+    lowStock: Product[];
+    onExport: () => void;
+}
+
+export default function Reports({ products, movements, lowStock, onExport }: ReportsProps) {
     const [statusFilter, setStatusFilter] = useState('all');
     const [categoryFilter, setCategoryFilter] = useState('');
     const entries = movements.filter((movement) => movement.type === 'entrada').reduce((sum, item) => sum + item.quantity, 0);
